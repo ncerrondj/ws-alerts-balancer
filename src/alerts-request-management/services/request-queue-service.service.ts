@@ -14,6 +14,7 @@ export class RequestQueueService {
       return;
     }
     const client = this.queue[0];
+    console.log(`\n`);
     console.log(`Manejando Cola para el socket ${client.id}.`);
     const userId = this.wsConnectionsService.getUserId(client);
     console.log(`El usuario es ${userId}.`);
@@ -29,6 +30,7 @@ export class RequestQueueService {
         2,
       )}.`,
     );
+    console.log(`\n`);
     client.emit(ALERT_REQUEST_MANAGEMENT_EVENTS.GET_ALERTS_ALLOWED, {
       resendForCaching: !Boolean(clientParameters.lastAlertsData),
     });
@@ -43,6 +45,11 @@ export class RequestQueueService {
     this.wsConnectionsService.getClientParameters(userId).lastAlertsData =
       payload;
     const childConnections = connections.filter((c) => c.id !== client.id);
+    console.log(`\n`);
+    console.log(
+      `Enviando alertas a ${childConnections.length} sockets, del usuario ${userId}. Conexiones: ${childConnections.map((c) => c.id).join(', ')}.`,
+    );
+    console.log(`\n`);
     childConnections.forEach((c) => {
       c.emit(
         ALERT_REQUEST_MANAGEMENT_EVENTS.LOAD_ALERTS_FROM_FIRST_EXECUTOR,
@@ -60,6 +67,11 @@ export class RequestQueueService {
     if (!isTheFirstConnection || this.queue.some((c) => c.id === client.id)) {
       return;
     }
+    console.log(`\n`);
+    console.log(
+      `Añadiendo el socket ${client.id} del usuario ${userId} a la cola.`,
+    );
+    console.log(`\n`);
     this.queue.push(client);
   }
   forceRequest(client: Socket) {
@@ -69,6 +81,11 @@ export class RequestQueueService {
     }
     const clientParameters =
       this.wsConnectionsService.getClientParameters(userId);
+    console.log(`\n`);
+    console.log(
+      `Forzando petición de alertas para el socket ${client.id} del usuario ${userId}.`,
+    );
+    console.log(`\n`);
     client.emit(ALERT_REQUEST_MANAGEMENT_EVENTS.GET_ALERTS_ALLOWED, {
       force: true,
       resendForCaching: !Boolean(clientParameters.lastAlertsData),
@@ -81,6 +98,11 @@ export class RequestQueueService {
     }
     const lastAlertsData =
       this.wsConnectionsService.getClientParameters(userId).lastAlertsData;
+    console.log(`\n`);
+    console.log(
+      `Enviando datos cacheados al socket ${client.id} del usuario ${userId}.`,
+    );
+    console.log(`\n`);
     client.emit(
       ALERT_REQUEST_MANAGEMENT_EVENTS.LOAD_ALERTS_FROM_FIRST_EXECUTOR,
       lastAlertsData,
