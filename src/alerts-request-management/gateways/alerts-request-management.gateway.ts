@@ -13,6 +13,7 @@ import { RequestQueueService } from '../services/request-queue-service.service';
 import { ShareAlertBodyPayload } from '../model/share-alert-body.payload';
 import { AskForPermissionForGetAlertsPayload } from '../model/ask-for-permission_for_get_alerts.payload';
 import { SetCachedDataPayload } from '../model/set-cached-data.payload';
+import { AlertsBodyCacheService } from '../services/alerts-body-cache.service';
 @WebSocketGateway({
   namespace: 'alerts-request-management',
   cors: { origin: '*' },
@@ -24,6 +25,7 @@ export class AlertsRequestManagementGateway implements OnGatewayDisconnect {
   constructor(
     private readonly wsConnectionsService: WsConnectionsService,
     private readonly requestQueueService: RequestQueueService,
+    private readonly alertsBodyCacheService: AlertsBodyCacheService,
   ) {}
 
   handleDisconnect(client: Socket) {
@@ -45,13 +47,14 @@ export class AlertsRequestManagementGateway implements OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: AskForPermissionForGetAlertsPayload,
   ) {
+    console.log(`\n`);
+    console.log(
+      `El usuario ${payload.userId} solicita permiso para obtener alertas.`,
+    );
+    console.log(`\n`);
     this.wsConnectionsService.addConnectionIfNecessary(payload.userId, client);
     if (payload?.force) {
       this.requestQueueService.forceRequest(client);
-      return;
-    }
-    if (payload?.cache) {
-      this.requestQueueService.sendCachedData(client);
       return;
     }
     this.requestQueueService.addRequestToQueue(client);
@@ -62,7 +65,10 @@ export class AlertsRequestManagementGateway implements OnGatewayDisconnect {
     @MessageBody() payload: SetCachedDataPayload,
   ) {
     this.wsConnectionsService.addConnectionIfNecessary(payload.userId, client);
-    this.wsConnectionsService.setCachedData(client, payload.data);
+    this.alertsBodyCacheService.setAlertBodyByUserIdInCache(
+      payload.userId,
+      payload.data,
+    );
   }
 
   @SubscribeMessage(ALERT_REQUEST_MANAGEMENT_ACTIONS.SHARE_ALERTS_BODY)

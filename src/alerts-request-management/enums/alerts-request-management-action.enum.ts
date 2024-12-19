@@ -6,5 +6,5 @@ export enum ALERT_REQUEST_MANAGEMENT_ACTIONS {
 }
 export enum ALERT_REQUEST_MANAGEMENT_EVENTS {
   GET_ALERTS_ALLOWED = 'getAlertsAllowed',
-  LOAD_ALERTS_FROM_FIRST_EXECUTOR = 'loadAlertsFromFirstExecutor',
+  GET_FROM_CACHE_ALLOWED = 'getFromCacheAllowed',
 }

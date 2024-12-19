@@ -1,30 +1,36 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Cron } from '@nestjs/schedule';
 import { WsConnectionsService } from './ws-connections.service';
 import { ALERT_REQUEST_MANAGEMENT_EVENTS } from '../enums/alerts-request-management-action.enum';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 @Injectable()
 export class RequestQueueService {
   private queue: Socket[] = [];
-  constructor(private readonly wsConnectionsService: WsConnectionsService) {}
+  constructor(
+    private readonly wsConnectionsService: WsConnectionsService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   @Cron('*/3 * * * * *') // Every 3 seconds
-  handleQueue() {
+  async handleQueue() {
     if (!this.queue.length) {
       return;
     }
     const client = this.queue[0];
-    console.log(`\n`);
-    console.log(`Manejando Cola para el socket ${client.id}.`);
     const userId = this.wsConnectionsService.getUserId(client);
-    console.log(`El usuario es ${userId}.`);
     const clientParameters =
       this.wsConnectionsService.getClientParameters(userId);
+    const isSet = await this.cacheManager.get<boolean>(userId + '_is_set');
+    console.log(`\n`);
+    console.log(`Manejando Cola para el socket ${client.id}.`);
+    console.log(`El usuario es ${userId}.`);
     console.log(
       `Los parametros del cliente son ${JSON.stringify(
         {
           connectionsIds: clientParameters?.connections.map((c) => c.id),
-          lastAlertsData: clientParameters?.lastAlertsData ? 'Si' : 'No',
+          bodyInCache: isSet ? 'Si' : 'No',
         },
         null,
         2,
@@ -32,7 +38,7 @@ export class RequestQueueService {
     );
     console.log(`\n`);
     client.emit(ALERT_REQUEST_MANAGEMENT_EVENTS.GET_ALERTS_ALLOWED, {
-      resendForCaching: !Boolean(clientParameters.lastAlertsData),
+      resendForCaching: !isSet,
     });
     this.queue = this.queue.slice(1);
   }
@@ -42,8 +48,8 @@ export class RequestQueueService {
       throw new Error('User not suscribed');
     }
     const connections = this.wsConnectionsService.getConnections(userId);
-    this.wsConnectionsService.getClientParameters(userId).lastAlertsData =
-      payload;
+    this.cacheManager.set(userId, JSON.stringify(payload));
+    this.cacheManager.set(userId + '_is_set', true);
     const childConnections = connections.filter((c) => c.id !== client.id);
     console.log(`\n`);
     console.log(
@@ -51,10 +57,7 @@ export class RequestQueueService {
     );
     console.log(`\n`);
     childConnections.forEach((c) => {
-      c.emit(
-        ALERT_REQUEST_MANAGEMENT_EVENTS.LOAD_ALERTS_FROM_FIRST_EXECUTOR,
-        payload,
-      );
+      c.emit(ALERT_REQUEST_MANAGEMENT_EVENTS.GET_FROM_CACHE_ALLOWED);
     });
   }
   addRequestToQueue(client: Socket) {
@@ -74,13 +77,11 @@ export class RequestQueueService {
     console.log(`\n`);
     this.queue.push(client);
   }
-  forceRequest(client: Socket) {
+  async forceRequest(client: Socket) {
     const userId = this.wsConnectionsService.getUserId(client);
     if (!userId) {
       throw new Error('User not suscribed');
     }
-    const clientParameters =
-      this.wsConnectionsService.getClientParameters(userId);
     console.log(`\n`);
     console.log(
       `Forzando petición de alertas para el socket ${client.id} del usuario ${userId}.`,
@@ -88,24 +89,7 @@ export class RequestQueueService {
     console.log(`\n`);
     client.emit(ALERT_REQUEST_MANAGEMENT_EVENTS.GET_ALERTS_ALLOWED, {
       force: true,
-      resendForCaching: !Boolean(clientParameters.lastAlertsData),
+      resendForCaching: !this.cacheManager.get<boolean>(userId + '_is_set'),
     });
-  }
-  sendCachedData(client: Socket) {
-    const userId = this.wsConnectionsService.getUserId(client);
-    if (!userId) {
-      throw new Error('User not suscribed');
-    }
-    const lastAlertsData =
-      this.wsConnectionsService.getClientParameters(userId).lastAlertsData;
-    console.log(`\n`);
-    console.log(
-      `Enviando datos cacheados al socket ${client.id} del usuario ${userId}.`,
-    );
-    console.log(`\n`);
-    client.emit(
-      ALERT_REQUEST_MANAGEMENT_EVENTS.LOAD_ALERTS_FROM_FIRST_EXECUTOR,
-      lastAlertsData,
-    );
   }
 }
