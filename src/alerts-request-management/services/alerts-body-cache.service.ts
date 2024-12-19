@@ -23,7 +23,14 @@ export class AlertsBodyCacheService implements OnModuleInit {
     if (!isSet) {
       return null;
     }
-    return JSON.parse(await this.cacheManager.get(userId));
+    try {
+      const body = await this.cacheManager.get<string>(userId);
+      return JSON.parse(body);
+    } catch {
+      this.cacheManager.del(userId);
+      this.cacheManager.del(userId + '_is_set');
+      return null;
+    }
   }
   async rawCache(userId: string) {
     return JSON.parse(await this.cacheManager.get(userId));
