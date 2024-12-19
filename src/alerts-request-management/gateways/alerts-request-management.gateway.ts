@@ -16,7 +16,7 @@ import { SetCachedDataPayload } from '../model/set-cached-data.payload';
 @WebSocketGateway({
   namespace: 'alerts-request-management',
   cors: { origin: '*' },
-  maxHttpBufferSize: 15e6, // 10 MB
+  maxHttpBufferSize: 15e6, // 15 MB
   pingInterval: 10000, // 10 seconds, intervalo de tiempo entre pings para mantener la conexión
   pingTimeout: 10000, // 10 seconds, si no responde en este tiempo se cierra la conexión
 })

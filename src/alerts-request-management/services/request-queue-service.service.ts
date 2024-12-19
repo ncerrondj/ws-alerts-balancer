@@ -8,15 +8,23 @@ export class RequestQueueService {
   private queue: Socket[] = [];
   constructor(private readonly wsConnectionsService: WsConnectionsService) {}
 
-  @Cron('*/2 * * * * *') // Every 3 seconds
+  @Cron('*/3 * * * * *') // Every 3 seconds
   handleQueue() {
     if (!this.queue.length) {
       return;
     }
     const client = this.queue[0];
+    console.log(`Manejando Cola para el socket ${client.id}.`);
     const userId = this.wsConnectionsService.getUserId(client);
+    console.log(`El usuario es ${userId}.`);
     const clientParameters =
       this.wsConnectionsService.getClientParameters(userId);
+    console.log(
+      `Los parametros del cliente son ${{
+        connectionsIds: clientParameters?.connections.map((c) => c.id),
+        lastAlertsData: clientParameters?.lastAlertsData ? 'Si' : 'No',
+      }}.`,
+    );
     client.emit(ALERT_REQUEST_MANAGEMENT_EVENTS.GET_ALERTS_ALLOWED, {
       resendForCaching: !Boolean(clientParameters.lastAlertsData),
     });
