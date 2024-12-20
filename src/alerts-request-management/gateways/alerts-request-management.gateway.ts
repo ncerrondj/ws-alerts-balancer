@@ -85,6 +85,11 @@ export class AlertsRequestManagementGateway implements OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: SuscribePayload,
   ) {
+    console.log(`\n`);
+    console.log(
+      `El usuario ${payload.userId} con el socket ${client.id} solicita ser el padre.`,
+    );
+    console.log(`\n`);
     this.wsConnectionsService.addConnectionIfNecessary(payload.userId, client);
     this.wsConnectionsService.setClientAsParent(client);
     this.requestQueueService.addRequestToQueue(client);
