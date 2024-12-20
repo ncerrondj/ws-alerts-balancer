@@ -79,4 +79,15 @@ export class AlertsRequestManagementGateway implements OnGatewayDisconnect {
     this.wsConnectionsService.addConnectionIfNecessary(payload.userId, client);
     this.requestQueueService.shareAlertsBody(client, payload.alertBody);
   }
+
+  @SubscribeMessage(ALERT_REQUEST_MANAGEMENT_ACTIONS.ASK_FOR_TO_BE_THE_PARENT)
+  handleAskForToBeTheParent(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: SuscribePayload,
+  ) {
+    this.wsConnectionsService.addConnectionIfNecessary(payload.userId, client);
+    this.wsConnectionsService.setClientAsParent(client);
+    this.requestQueueService.addRequestToQueue(client);
+  }
+
 }

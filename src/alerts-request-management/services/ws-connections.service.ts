@@ -47,4 +47,14 @@ export class WsConnectionsService {
       this.connections[userId]?.connections.some((c) => c.id === client.id),
     );
   }
+  setClientAsParent(client: Socket) {
+    const userId = this.getUserId(client);
+    if (!userId) {
+      return;
+    }
+    this.connections[userId].connections = [
+      client,
+      ...this.connections[userId].connections.filter((c) => c.id !== client.id),
+    ];
+  }
 }
