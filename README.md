@@ -1,99 +1,52 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Balanceador de Alertas con Web Sockets
+## Problematica
+La aplicación Caprinet hace consultas cada 3 minutos a un api principal que ejecuta y devuelve el buscado de alertas desde la base de datos, consulta que consume muchos recursos, sobre todo cuando hay muchos usuarios conectados al mismo tiempo, que pueden tener varias pestañas abiertas, lo que hace que la consulta se ejecute varias veces en un corto periodo de tiempo, lo que puede causar un cuello de botella en la base de datos.
+## Descripción
+Este proyecto permite que la aplicación Caprinet se conecte a un servidor de Web Sockets, el cual recopila las conexiones por usuario. <br>
+De todas las conexiones de un usuario asigna uno como el padre y los demás como hijos. <br>
+Ahora el Caprinet no hara la consulta al api principal cada 3 minutos, sino que le preguntara al servidor de Web Sockets si puede hacer la consulta al api princial cada 3 minutos, el cual se encargara de habilitar la consulta al api principal solo a la conexión padre del usuario (aunque muchas conexiones hijas pregunten), una vez el padre reciba la respuesta, la enviara a este API y esta se encargara de cachearla y notificar a los hijos de este usuario que pueden obtener la respuesta desde el cache (este API) sin necesidad de hacer la consulta al api principal.
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Características
+- **Distribución en tiempo real**: Permite la comunicación bidireccional entre el servidor y los clientes.
+- **Escalabilidad**: Capaz de manejar múltiples conexiones simultáneas por usuario.
+- **Fiabilidad**: Asegura que solo una conexión por usuario realice la consulta al api principal y las demás obtengan la respuesta desde el cache.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Requisitos
+- Node.js >= 14.x
+- npm >= 6.x
 
-## Description
+## Instalación
+1. Clona el repositorio:
+  ```bash
+  git clone https://github.com/ncerrondj/ws-alerts-balancer
+  ```
+2. Navega al directorio del proyecto:
+  ```bash
+  cd ws-alerts-balancer
+  ```
+3. Instala las dependencias:
+  ```bash
+  npm install
+  ```
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Uso
+1. Inicia el servidor:
+  ```bash
+  npm start
+  ```
+2. Pon en el archivo contenedore.js.php del caprinet la url del servidor de Web Sockets:
+  ```javascript
+  const remoteUrl = 'http://localhost:40325';
+  ```
+## Docker
+1. Construye la imagen:
+  ```bash
+  docker build -t ws-alerts-balancer .
+  ```
+2. Ejecuta el contenedor:
+  ```bash
+  docker run -d -p 40325:40325 -e PORT=40325  --name ws-alerts-balancer-app ws-alerts-balancer
+  ```
 
-## Project setup
-
-```bash
-$ npm install
-```
-
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Licencia
+Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
