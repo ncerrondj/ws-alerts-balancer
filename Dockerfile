@@ -1,7 +1,7 @@
-FROM node:14
+FROM node:14.16.0
 WORKDIR /app
 COPY package.json /app
-RUN npm install
+RUN npm install --legacy-peer-deps
 COPY . /app
 RUN npm run build
 EXPOSE 40325
