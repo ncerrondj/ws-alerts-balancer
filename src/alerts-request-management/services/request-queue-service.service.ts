@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { Cron } from '@nestjs/schedule';
+import { Interval } from '@nestjs/schedule';
 import { WsConnectionsService } from './ws-connections.service';
 import { ALERT_REQUEST_MANAGEMENT_EVENTS } from '../enums/alerts-request-management-action.enum';
 import { Cache } from 'cache-manager';
@@ -13,7 +13,8 @@ export class RequestQueueService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  @Cron('*/2 * * * * *') // Every 2 seconds
+  // @Cron('*/2 * * * * *') // Every 2 seconds
+  @Interval(1500) // Every 1.5 seconds
   async handleQueue() {
     if (!this.queue.length) {
       return;
