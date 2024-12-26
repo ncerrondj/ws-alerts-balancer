@@ -44,4 +44,17 @@ export class AlertsBodyCacheController {
       body,
     );
   }
+  @Get('get-connected-users')
+  getConnectedUsers() {
+    return this.wsConnectionsService.getConnectedUsers();
+  }
+
+  @Get('get-user-connections/:userId')
+  getUserConnections(@Param('userId') userId: string) {
+    const userConnections =  this.wsConnectionsService.getConnections(userId);
+    if (userConnections.length === 0) {
+      return 'No hay conexiones para el usuario';
+    }
+    return userConnections.map((c) => c.id);
+  }
 }

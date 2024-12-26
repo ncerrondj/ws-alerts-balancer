@@ -57,4 +57,7 @@ export class WsConnectionsService {
       ...this.connections[userId].connections.filter((c) => c.id !== client.id),
     ];
   }
+  getConnectedUsers() {
+    return Object.keys(this.connections);
+  }
 }
