@@ -2,12 +2,14 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AlertsBodyCacheService } from 'src/alerts-request-management/services/alerts-body-cache.service';
 import { WsConnectionsService } from '../services/ws-connections.service';
 import { Socket } from 'socket.io';
+import { RequestQueueService } from '../services/request-queue-service.service';
 
 @Controller('alerts-request-management')
 export class AlertsBodyCacheController {
   constructor(
     private readonly alertsBodyCacheService: AlertsBodyCacheService,
     private readonly wsConnectionsService: WsConnectionsService,
+    private readonly requestQueueService: RequestQueueService,
   ) {}
 
   @Get('get-alert-body-by-user-id/:userId/:socketId')
@@ -57,4 +59,9 @@ export class AlertsBodyCacheController {
     }
     return userConnections.map((c) => c.id);
   }
+  @Get('ver-cola')
+  verCola() {
+    return this.requestQueueService.getQueue();
+  }
+
 }

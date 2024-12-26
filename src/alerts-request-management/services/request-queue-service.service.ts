@@ -93,4 +93,12 @@ export class RequestQueueService {
       resendForCaching: !this.cacheManager.get<boolean>(userId + '_is_set'),
     });
   }
+  getQueue() {
+    return this.queue.map((c) => {
+      return {
+        userId: this.wsConnectionsService.getUserId(c),
+        socketId: c.id,
+      };
+    });
+  }
 }
