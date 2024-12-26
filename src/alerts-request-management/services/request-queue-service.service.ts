@@ -13,7 +13,7 @@ export class RequestQueueService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  @Cron('*/3 * * * * *') // Every 3 seconds
+  @Cron('*/2 * * * * *') // Every 2 seconds
   async handleQueue() {
     if (!this.queue.length) {
       return;
