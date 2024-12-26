@@ -39,6 +39,13 @@ export class WsConnectionsService {
   getConnections(userId: string): Socket[] {
     return this.connections[userId]?.connections || [];
   }
+  getAllConnections() {
+    const connections: Socket[] = [];
+    Object.keys(this.connections).forEach((userId) => {
+      connections.push(...this.connections[userId].connections);
+    });
+    return connections;
+  }
   getClientParameters(userId: string) {
     return this.connections[userId];
   }

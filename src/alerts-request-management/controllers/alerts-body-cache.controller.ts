@@ -63,5 +63,9 @@ export class AlertsBodyCacheController {
   verCola() {
     return this.requestQueueService.getQueue();
   }
+  @Get('logs')
+  getLogs() {
+    return this.requestQueueService.getLogs();
+  }
 
 }

@@ -67,7 +67,7 @@ export class RequestQueueService {
     }
     const connections = this.wsConnectionsService.getConnections(userId);
     const isTheFirstConnection = connections && connections[0].id === client.id;
-      //this.wsConnectionsService.getConnections(userId).at(0)?.id === client.id;
+    //this.wsConnectionsService.getConnections(userId).at(0)?.id === client.id;
     if (!isTheFirstConnection || this.queue.some((c) => c.id === client.id)) {
       return;
     }
@@ -100,5 +100,25 @@ export class RequestQueueService {
         socketId: c.id,
       };
     });
+  }
+  getLogs() {
+    return {
+      TotalConnections: this.wsConnectionsService.getAllConnections().length,
+      ConnectedUsers: this.wsConnectionsService.getConnectedUsers().length,
+      UserConnections: {
+        ...this.wsConnectionsService
+          .getConnectedUsers()
+          .reduce((acc, userId) => {
+            acc[userId] = {
+              TotalConnections:
+                this.wsConnectionsService.getConnections(userId).length,
+              Connections: this.wsConnectionsService
+                .getConnections(userId)
+                .map((c) => c.id),
+            };
+            return acc;
+          }, {}),
+      },
+    };
   }
 }
