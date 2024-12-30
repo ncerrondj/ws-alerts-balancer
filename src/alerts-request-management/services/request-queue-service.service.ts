@@ -14,8 +14,9 @@ export class RequestQueueService {
   ) {}
 
   // @Cron('*/2 * * * * *') // Every 2 seconds
-  @Interval(1500) // Every 1.5 seconds
+  @Interval(2000) // Every 2 seconds
   async handleQueue() {
+    console.log('test');
     if (!this.queue.length) {
       return;
     }
@@ -24,6 +25,7 @@ export class RequestQueueService {
     const clientParameters =
       this.wsConnectionsService.getClientParameters(userId);
     const isSet = await this.cacheManager.get<boolean>(userId + '_is_set');
+    console.log({ isSet });
     console.log(`\n`);
     console.log(`Manejando Cola para el socket ${client.id}.`);
     console.log(`El usuario es ${userId}.`);
