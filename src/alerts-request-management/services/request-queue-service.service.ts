@@ -16,7 +16,6 @@ export class RequestQueueService {
   // @Cron('*/2 * * * * *') // Every 2 seconds
   @Interval(2000) // Every 2 seconds
   async handleQueue() {
-    console.log('test');
     if (!this.queue.length) {
       return;
     }
