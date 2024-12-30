@@ -4,6 +4,7 @@ import { WsConnectionsService } from './services/ws-connections.service';
 import { AlertsRequestManagementGateway } from './gateways/alerts-request-management.gateway';
 import { AlertsBodyCacheService } from './services/alerts-body-cache.service';
 import { AlertsBodyCacheController } from './controllers/alerts-body-cache.controller';
+import { LogsController } from './controllers/logs.controller';
 
 @Module({
   providers: [
@@ -12,6 +13,6 @@ import { AlertsBodyCacheController } from './controllers/alerts-body-cache.contr
     AlertsRequestManagementGateway,
     AlertsBodyCacheService,
   ],
-  controllers: [AlertsBodyCacheController],
+  controllers: [AlertsBodyCacheController, LogsController],
 })
 export class AlertsRequestManagementModule {}
