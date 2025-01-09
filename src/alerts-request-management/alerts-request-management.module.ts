@@ -5,6 +5,7 @@ import { AlertsRequestManagementGateway } from './gateways/alerts-request-manage
 import { AlertsBodyCacheService } from './services/alerts-body-cache.service';
 import { AlertsBodyCacheController } from './controllers/alerts-body-cache.controller';
 import { LogsController } from './controllers/logs.controller';
+import { MessageController } from './controllers/message.controller';
 
 @Module({
   providers: [
@@ -13,6 +14,6 @@ import { LogsController } from './controllers/logs.controller';
     AlertsRequestManagementGateway,
     AlertsBodyCacheService,
   ],
-  controllers: [AlertsBodyCacheController, LogsController],
+  controllers: [AlertsBodyCacheController, LogsController, MessageController],
 })
 export class AlertsRequestManagementModule {}
