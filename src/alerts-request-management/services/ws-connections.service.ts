@@ -21,12 +21,16 @@ export class WsConnectionsService {
   }
   removeConnection(client: Socket) {
     const userId = this.getUserId(client);
-    if (userId) {
+    if (!userId) {
+      return;
+    }
+    this.connections[userId].connections = this.connections[userId].connections.filter(
+      (c) => c.id !== client.id,
+    );
+    if (this.connections[userId].connections.length === 0) {
+      delete this.connections[userId];
       this.cacheManager.del(userId);
       this.cacheManager.del(userId + '_is_set');
-      this.connections[userId].connections = this.connections[userId].connections.filter(
-        (c) => c.id !== client.id,
-      );
     }
   }
   getConnections(userId: string): Socket[] {
