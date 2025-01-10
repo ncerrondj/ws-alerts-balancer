@@ -17,6 +17,9 @@ export class WsConnectionsService {
     if (this.connections[userId].connections.some((c) => c.id === client.id)) {
       return;
     }
+    if (!client || !client?.id) {
+      return;
+    }
     this.connections[userId].connections.push(client);
   }
   removeConnection(client: Socket) {
@@ -35,6 +38,19 @@ export class WsConnectionsService {
   }
   getConnections(userId: string): Socket[] {
     return this.connections[userId]?.connections || [];
+  }
+  cleanEmptyConnections(userId: string) {
+    if (!this.connections[userId]) {
+      return;
+    }
+    this.connections[userId].connections = this.connections[userId].connections.filter(
+      (c) => Boolean(c) && Boolean(c?.id),
+    );
+    if (this.connections[userId].connections.length === 0) {
+      delete this.connections[userId];
+      this.cacheManager.del(userId);
+      this.cacheManager.del(userId + '_is_set');
+    }
   }
   getAllConnections() {
     const connections: Socket[] = [];

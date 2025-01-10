@@ -67,8 +67,10 @@ export class RequestQueueService {
     if (!userId) {
       throw new Error('User not suscribed');
     }
+    this.wsConnectionsService.cleanEmptyConnections(userId);
     const connections = this.wsConnectionsService.getConnections(userId);
-    const isTheFirstConnection = connections && connections[0].id === client.id;
+
+    const isTheFirstConnection = connections && connections[0]?.id === client.id;
     //this.wsConnectionsService.getConnections(userId).at(0)?.id === client.id;
     if (!isTheFirstConnection || this.queue.some((c) => c.id === client.id)) {
       return;
