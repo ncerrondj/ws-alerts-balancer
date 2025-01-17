@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 export interface ClientParameters {
   connections: Socket[];
-  perfilId: string;
+  perfilIds: string[];
 }
 export interface ClientGroups {
   [userId: string]: ClientParameters;

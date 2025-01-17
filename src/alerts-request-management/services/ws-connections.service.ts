@@ -11,11 +11,14 @@ export class WsConnectionsService {
 
   addConnectionIfNecessary(suscribePayload: SuscribePayload, client: Socket) {
     const userId = suscribePayload?.userId;
-    const perfilId = suscribePayload?.perfilId;
+    const {
+      perfilId
+    } = suscribePayload;
+    const perfilIds = perfilId ? [...perfilId.split(',')] : []; 
     if (!this.connections[userId]) {
       this.connections[userId] = {
         connections: [],
-        perfilId,
+        perfilIds: perfilIds,
       };
     }
     if (this.connections[userId].connections.some((c) => c.id === client.id)) {
@@ -27,8 +30,8 @@ export class WsConnectionsService {
     this.connections[userId].connections.push(client);
 
     //* solo por si acaso pq se metera una actualizacion donde recien se enviara el perfilId progresivamente
-    if (!this.connections[userId].perfilId) {
-      this.connections[userId].perfilId = perfilId;
+    if (!this.connections[userId].perfilIds.length) {
+      this.connections[userId].perfilIds = perfilIds;
     }
   }
   removeConnection(client: Socket) {
@@ -93,7 +96,7 @@ export class WsConnectionsService {
     const connections: Socket[] = [];
     Object.keys(this.connections).forEach((userId) => {
       const userConnections = this.connections[userId].connections;
-      if (this.connections[userId].perfilId == perfilId) {
+      if (this.connections[userId].perfilIds.includes(perfilId)) {
         connections.push(...userConnections);
       }
     });
