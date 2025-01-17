@@ -120,7 +120,7 @@ export class RequestQueueService {
               Connections: this.wsConnectionsService
                 .getConnections(userId)
                 .map((c) => c.id),
-              PerfilId: this.wsConnectionsService.getClientParameters(userId).perfilIds,
+              PerfilIds: this.wsConnectionsService.getClientParameters(userId).perfilIds,
             };
             return acc;
           }, {}),
