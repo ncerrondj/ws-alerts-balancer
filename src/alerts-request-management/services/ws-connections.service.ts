@@ -14,7 +14,7 @@ export class WsConnectionsService {
     const {
       perfilId
     } = suscribePayload;
-    const perfilIds = perfilId ? [...perfilId.split(',')] : []; 
+    const perfilIds = perfilId ? perfilId.toString().split(',') : []; 
     if (!this.connections[userId]) {
       this.connections[userId] = {
         connections: [],
