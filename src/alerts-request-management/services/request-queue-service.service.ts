@@ -49,6 +49,7 @@ export class RequestQueueService {
     if (!userId) {
       throw new Error('User not suscribed');
     }
+    this.wsConnectionsService.cleanEmptyConnections(userId);
     const connections = this.wsConnectionsService.getConnections(userId);
     this.cacheManager.set(userId, JSON.stringify(payload));
     this.cacheManager.set(userId + '_is_set', true);
@@ -119,6 +120,7 @@ export class RequestQueueService {
               Connections: this.wsConnectionsService
                 .getConnections(userId)
                 .map((c) => c.id),
+              PerfilId: this.wsConnectionsService.getClientParameters(userId).perfilId,
             };
             return acc;
           }, {}),

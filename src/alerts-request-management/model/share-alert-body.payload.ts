@@ -1,4 +1,5 @@
-export class ShareAlertBodyPayload {
-  userId: string;
+import { SuscribePayload } from './suscribe.payload';
+
+export class ShareAlertBodyPayload extends SuscribePayload {
   alertBody: any;
 }

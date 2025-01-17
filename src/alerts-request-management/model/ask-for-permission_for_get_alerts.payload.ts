@@ -1,4 +1,5 @@
-export class AskForPermissionForGetAlertsPayload {
-  userId: string;
+import { SuscribePayload } from './suscribe.payload';
+
+export class AskForPermissionForGetAlertsPayload extends SuscribePayload {
   force = false;
 }

@@ -3,15 +3,19 @@ import { ClientGroups } from '../interfaces/client-groups.interface';
 import { Socket } from 'socket.io';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { SuscribePayload } from '../model/suscribe.payload';
 @Injectable()
 export class WsConnectionsService {
   private readonly connections: ClientGroups = {};
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-  addConnectionIfNecessary(userId: string, client: Socket) {
+  addConnectionIfNecessary(suscribePayload: SuscribePayload, client: Socket) {
+    const userId = suscribePayload?.userId;
+    const perfilId = suscribePayload?.perfilId;
     if (!this.connections[userId]) {
       this.connections[userId] = {
         connections: [],
+        perfilId,
       };
     }
     if (this.connections[userId].connections.some((c) => c.id === client.id)) {
@@ -79,5 +83,15 @@ export class WsConnectionsService {
   }
   getConnectedUsers() {
     return Object.keys(this.connections);
+  }
+  getAllConnectionByPerfilId(perfilId: string) {
+    const connections: Socket[] = [];
+    Object.keys(this.connections).forEach((userId) => {
+      const userConnections = this.connections[userId].connections;
+      if (this.connections[userId].perfilId == perfilId) {
+        connections.push(...userConnections);
+      }
+    });
+    return connections;
   }
 }
