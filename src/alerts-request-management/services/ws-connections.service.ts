@@ -21,10 +21,15 @@ export class WsConnectionsService {
     if (this.connections[userId].connections.some((c) => c.id === client.id)) {
       return;
     }
-    if (!client || !client?.id) {
+    if (!client) {
       return;
     }
     this.connections[userId].connections.push(client);
+
+    //* solo por si acaso pq se metera una actualizacion donde recien se enviara el perfilId progresivamente
+    if (!this.connections[userId].perfilId) {
+      this.connections[userId].perfilId = perfilId;
+    }
   }
   removeConnection(client: Socket) {
     const userId = this.getUserId(client);
