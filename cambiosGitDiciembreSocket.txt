@@ -1,0 +1,227 @@
+commit b8472acb833788bdedf115024bc636cf2f44ed42
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Mon Dec 30 09:39:28 2024 -0500
+
+    Agregar LogsController para obtener registros de la cola de solicitudes
+
+ .../alerts-request-management.module.ts                     |  3 ++-
+ .../controllers/logs.controller.ts                          | 13 +++++++++++++
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+commit 4cffa4c133671bd63e37c9e25710510ff5cbea05
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Mon Dec 30 09:32:28 2024 -0500
+
+    Eliminar registro de prueba en el método handleQueue del servicio de manejo de la cola
+
+ src/alerts-request-management/services/request-queue-service.service.ts | 1 -
+ 1 file changed, 1 deletion(-)
+
+commit d102c6b6e19f89ab57fb8c7267ba0a7a29e960ee
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Mon Dec 30 09:32:15 2024 -0500
+
+    Actualizar el intervalo del manejo de la cola a 2 segundos y agregar registros de depuración
+
+ .../services/request-queue-service.service.ts                         | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+commit 7e8e1d3f4cf0e49ad8b953baee68687cc902c32b
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Thu Dec 26 15:20:14 2024 -0500
+
+    Actualizar el manejo de la cola para usar un intervalo de 1.5 segundos en lugar de cron cada 2 segundos
+
+ .../services/request-queue-service.service.ts                        | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+commit 04d07a10829bde4cfc7f3eca7edf14bd8d8c3d2b
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Thu Dec 26 15:04:40 2024 -0500
+
+    Actualizar la frecuencia del cron para manejar la cola cada 2 segundos
+
+ src/alerts-request-management/services/request-queue-service.service.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 80d02aafc47bf2b54a2616550f5fd14b39b0b96d
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Thu Dec 26 15:01:25 2024 -0500
+
+    Agregar método para obtener registros de conexiones y endpoint correspondiente en AlertsBodyCacheController
+
+ .../controllers/alerts-body-cache.controller.ts    |  4 ++++
+ .../services/request-queue-service.service.ts      | 22 +++++++++++++++++++++-
+ .../services/ws-connections.service.ts             |  7 +++++++
+ 3 files changed, 32 insertions(+), 1 deletion(-)
+
+commit 30b60dea4b56ba9ea1654b0078debce9671f42fc
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Thu Dec 26 12:05:36 2024 -0500
+
+    Actualizar el puerto del servidor para usar una variable de entorno
+
+ src/main.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit ae054e459faaab1c6f9b3503bc7ae14eba23346b
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Thu Dec 26 12:01:41 2024 -0500
+
+    Agregar método para obtener la cola de solicitudes en RequestQueueService y endpoint correspondiente en AlertsBodyCacheController
+
+ .../controllers/alerts-body-cache.controller.ts                   | 7 +++++++
+ .../services/request-queue-service.service.ts                     | 8 ++++++++
+ 2 files changed, 15 insertions(+)
+
+commit 65545036b211554c65b177e676281675a42532e3
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Thu Dec 26 10:52:27 2024 -0500
+
+    Agregar endpoints para obtener usuarios conectados y conexiones de usuario; actualizar puerto del servidor a 3001
+
+ .../controllers/alerts-body-cache.controller.ts             | 13 +++++++++++++
+ .../services/ws-connections.service.ts                      |  3 +++
+ src/main.ts                                                 |  2 +-
+ 3 files changed, 17 insertions(+), 1 deletion(-)
+
+commit 28c96a5c31278d4296fbe3c7f190716fb9d6f328
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Mon Dec 23 12:44:52 2024 -0500
+
+    Actualizar Dockerfile y package.json para usar versiones específicas de Node y dependencias
+
+ Dockerfile        |    4 +-
+ package-lock.json | 9666 -----------------------------------------------------
+ package.json      |   65 +-
+ 3 files changed, 35 insertions(+), 9700 deletions(-)
+
+commit caa65e43136b788f84b3515a85b94a39483632cd
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Mon Dec 23 11:13:09 2024 -0500
+
+    Agregar soporte para node 14
+
+ .dockerignore                                      |   2 +
+ Dockerfile                                         |  10 ++
+ README.md                                          | 151 +++++++--------------
+ package.json                                       |  56 ++++----
+ .../services/request-queue-service.service.ts      |   5 +-
+ tsconfig.json                                      |   5 +-
+ 6 files changed, 99 insertions(+), 130 deletions(-)
+
+commit f2e772b45a4aae8e2077556ab5d9984e0994755d
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Fri Dec 20 09:42:37 2024 -0500
+
+    Agregar logs para la solicitud de ser el padre en AlertsRequestManagementGateway
+
+ .../gateways/alerts-request-management.gateway.ts                    | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+commit 6650e051fe91aabf5bf2d6e481860fd6797db246
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Fri Dec 20 09:41:40 2024 -0500
+
+    Agregar acción ASK_FOR_TO_BE_THE_PARENT y manejar la suscripción en el gateway
+
+ .../enums/alerts-request-management-action.enum.ts            |  1 +
+ .../gateways/alerts-request-management.gateway.ts             | 11 +++++++++++
+ .../services/ws-connections.service.ts                        | 10 ++++++++++
+ 3 files changed, 22 insertions(+)
+
+commit 11265bbb5f547016564485de214d273ac4bcfe9d
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Thu Dec 19 17:57:53 2024 -0500
+
+    alerts-body-cache.service: getAlertBodyByUserIdFromCache errors handler
+
+ .eslintrc.js                                                     | 4 +---
+ package-lock.json                                                | 3 +--
+ package.json                                                     | 2 --
+ .../services/alerts-body-cache.service.ts                        | 9 ++++++++-
+ 4 files changed, 10 insertions(+), 8 deletions(-)
+
+commit 9f257422d2fdaf9327aa8480efaaf262f26faadc
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Thu Dec 19 16:57:28 2024 -0500
+
+    ram cache version: preliminar 1
+
+ package-lock.json                                  | 56 ++++++++++++++++++++++
+ package.json                                       |  2 +
+ .../alerts-request-management.module.ts            |  4 ++
+ .../controllers/alerts-body-cache.controller.ts    | 47 ++++++++++++++++++
+ .../enums/alerts-request-management-action.enum.ts |  2 +-
+ .../gateways/alerts-request-management.gateway.ts  | 16 +++++--
+ .../interfaces/client-groups.interface.ts          |  1 -
+ .../ask-for-permission_for_get_alerts.payload.ts   |  1 -
+ .../services/alerts-body-cache.service.ts          | 36 ++++++++++++++
+ .../services/request-queue-service.service.ts      | 54 ++++++++-------------
+ .../services/ws-connections.service.ts             | 15 +++---
+ src/app.module.ts                                  | 11 ++++-
+ src/main.ts                                        |  1 +
+ 13 files changed, 193 insertions(+), 53 deletions(-)
+
+commit d89eb97e83a04a799186fbbdc01b67dc6ffe6a1e
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Thu Dec 19 11:01:38 2024 -0500
+
+    request-reueu-service: logs for all methods add
+
+ .../services/request-queue-service.service.ts      | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+commit 203fc958d901b4767033d6c2fe456a18b8b8040c
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Thu Dec 19 10:43:39 2024 -0500
+
+    request-queue-service: logs beutty
+
+ .../services/request-queue-service.service.ts                | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+commit b989073d5753e8fb5c07de9af4f3c2a3d42dc312
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Thu Dec 19 10:39:42 2024 -0500
+
+    Request-queue-service: logs for handle Queue
+
+ .../gateways/alerts-request-management.gateway.ts       |   2 +-
+ .../services/request-queue-service.service.ts           |  10 +++++++++-
+ ws-alerts-balancer.rar                                  | Bin 84707 -> 0 bytes
+ 3 files changed, 10 insertions(+), 2 deletions(-)
+
+commit f2a544277b7a33ec978fd5d28fa69219635dde1b
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Wed Dec 18 17:17:27 2024 -0500
+
+    Primera version preliminar, completo. Agregar configuración inicial de Prettier, TypeScript y ESLint; implementar servicio y controlador de NestJS; definir modelos y enums para la gestión de alertas.
+
+ .eslintrc.js                                       |   25 +
+ .gitignore                                         |   56 +
+ .prettierrc                                        |    5 +
+ README.md                                          |   99 +
+ nest-cli.json                                      |    8 +
+ package-lock.json                                  | 9611 ++++++++++++++++++++
+ package.json                                       |   75 +
+ .../alerts-request-management.module.ts            |   13 +
+ .../enums/alerts-request-management-action.enum.ts |   10 +
+ .../gateways/alerts-request-management.gateway.ts  |   76 +
+ .../interfaces/client-groups.interface.ts          |   12 +
+ .../ask-for-permission_for_get_alerts.payload.ts   |    5 +
+ .../model/set-cached-data.payload.ts               |    4 +
+ .../model/share-alert-body.payload.ts              |    4 +
+ .../model/suscribe.payload.ts                      |    3 +
+ .../services/request-queue-service.service.ts      |   77 +
+ .../services/ws-connections.service.ts             |   53 +
+ src/app.controller.ts                              |   12 +
+ src/app.module.ts                                  |   12 +
+ src/app.service.ts                                 |    8 +
+ src/main.ts                                        |    8 +
+ test/app.e2e-spec.ts                               |   24 +
+ test/jest-e2e.json                                 |    9 +
+ tsconfig.build.json                                |    4 +
+ tsconfig.json                                      |   21 +
+ ws-alerts-balancer.rar                             |  Bin 0 -> 84707 bytes
+ 26 files changed, 10234 insertions(+)

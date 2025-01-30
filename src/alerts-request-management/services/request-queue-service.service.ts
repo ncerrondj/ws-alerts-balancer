@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { Interval } from '@nestjs/schedule';
+import { Cron, Interval } from '@nestjs/schedule';
 import { WsConnectionsService } from './ws-connections.service';
 import { ALERT_REQUEST_MANAGEMENT_EVENTS } from '../enums/alerts-request-management-action.enum';
 import { Cache } from 'cache-manager';
@@ -44,6 +44,24 @@ export class RequestQueueService {
     });
     this.queue = this.queue.slice(1);
   }
+  //cron 5 minutos
+  @Cron('0 */2 * * * *')
+  async clearCache() {
+    const limit = 5;
+    console.log(`\n`);
+    console.log(`Limpiando cache de alertas que no se han enviado en los ultimos ${limit} minutos.`);
+    console.log(`\n`);
+    const userIdsCleaned = this.wsConnectionsService.cleanCacheWithMoreMinutesThatNotWasCached(limit);
+    if (!userIdsCleaned.length) {
+      console.log(`\n`);
+      console.log(`No se encontraron usuarios con cache por limpiar.`);
+      console.log(`\n`);
+      return;
+    }
+    console.log(`\n`);
+    console.log(`Se limpiaron los usuarios ${userIdsCleaned.join(', ')}.`);
+    console.log(`\n`);
+  }
   shareAlertsBody(client: Socket, payload: any) {
     const userId = this.wsConnectionsService.getUserId(client);
     if (!userId) {
@@ -53,6 +71,7 @@ export class RequestQueueService {
     const connections = this.wsConnectionsService.getConnections(userId);
     this.cacheManager.set(userId, JSON.stringify(payload));
     this.cacheManager.set(userId + '_is_set', true);
+    this.wsConnectionsService.setLastTimeCached(userId);
     const childConnections = connections.filter((c) => c.id !== client.id);
     console.log(`\n`);
     console.log(
@@ -106,25 +125,33 @@ export class RequestQueueService {
       };
     });
   }
-  getLogs() {
-    return {
-      TotalConnections: this.wsConnectionsService.getAllConnections().length,
-      ConnectedUsers: this.wsConnectionsService.getConnectedUsers().length,
-      UserConnections: {
-        ...this.wsConnectionsService
-          .getConnectedUsers()
-          .reduce((acc, userId) => {
-            acc[userId] = {
-              TotalConnections:
-                this.wsConnectionsService.getConnections(userId).length,
-              Connections: this.wsConnectionsService
-                .getConnections(userId)
-                .map((c) => c.id),
-              PerfilIds: this.wsConnectionsService.getClientParameters(userId).perfilIds,
-            };
-            return acc;
-          }, {}),
-      },
-    };
+  async getLogs() {
+    const userConnections: { [key: string]: any } = {};
+    const logs: { [key: string]: any } = {};
+    const userIds = this.wsConnectionsService
+    .getConnectedUsers();
+    for (const userId of userIds) {
+      const parameters = this.wsConnectionsService.getClientParameters(userId);
+      let LastTimeCached = '';
+      if (parameters.lastTimeCached) {
+        LastTimeCached =
+          parameters.lastTimeCached.toLocaleDateString() +
+          ' ' +
+          parameters.lastTimeCached.toLocaleTimeString();
+      }
+      userConnections[userId] = {
+        TotalConnections: this.wsConnectionsService.getConnections(userId).length,
+        Connections: this.wsConnectionsService
+          .getConnections(userId)
+          .map((c) => c.id),
+        PerfilIds: parameters.perfilIds,
+        LastTimeCached,
+        isThereDataOnCache: Boolean(await this.cacheManager.get(userId + '_is_set')),
+      };
+    }
+    logs.TotalConnections = this.wsConnectionsService.getAllConnections().length;
+    logs.ConnectedUsers = userIds.length;
+    logs.UserConnections = userConnections;
+    return logs;
   }
 }

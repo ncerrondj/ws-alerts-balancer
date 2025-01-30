@@ -38,6 +38,7 @@ export class AlertsBodyCacheService implements OnModuleInit {
   async setAlertBodyByUserIdInCache(userId: string, body: any) {
     await this.cacheManager.set(userId, JSON.stringify(body));
     await this.cacheManager.set(userId + '_is_set', true);
+    this.wsConnectionsService.setLastTimeCached(userId);
     return { success: true, message: 'Body setted in cache' };
   }
 }

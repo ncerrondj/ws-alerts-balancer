@@ -6,6 +6,7 @@ import { Cache } from 'cache-manager';
 import { SuscribePayload } from '../model/suscribe.payload';
 @Injectable()
 export class WsConnectionsService {
+  
   private readonly connections: ClientGroups = {};
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
@@ -19,6 +20,7 @@ export class WsConnectionsService {
       this.connections[userId] = {
         connections: [],
         perfilIds: perfilIds,
+        lastTimeCached: null,
       };
     }
     if (this.connections[userId].connections.some((c) => c.id === client.id)) {
@@ -56,7 +58,7 @@ export class WsConnectionsService {
       return;
     }
     this.connections[userId].connections = this.connections[userId].connections.filter(
-      (c) => Boolean(c) && Boolean(c?.id),
+      (c) => Boolean(c) && Boolean(c?.id) && Boolean(c?.connected),
     );
     if (this.connections[userId].connections.length === 0) {
       delete this.connections[userId];
@@ -92,6 +94,24 @@ export class WsConnectionsService {
   getConnectedUsers() {
     return Object.keys(this.connections);
   }
+  cleanCacheWithMoreMinutesThatNotWasCached(minutes: number): string[] {
+    const users: string[] = [];
+    Object.keys(this.connections).forEach((userId) => {
+      const lastTimeCached = this.connections[userId].lastTimeCached;
+      if (!lastTimeCached) {
+        return;
+      }
+      const now = new Date();
+      const diff = now.getTime() - lastTimeCached.getTime();
+      
+      if (diff > minutes * 60 * 1000) {
+        this.cacheManager.del(userId);
+        this.cacheManager.del(userId + '_is_set');
+        users.push(userId);
+      }
+    });
+    return users;
+  }
   getAllConnectionByPerfilId(perfilId: string) {
     const connections: Socket[] = [];
     Object.keys(this.connections).forEach((userId) => {
@@ -102,4 +122,11 @@ export class WsConnectionsService {
     });
     return connections;
   }
+  setLastTimeCached(userId: string) {
+    if (!this.connections[userId]) {
+      return;
+    }
+    this.connections[userId].lastTimeCached = new Date();
+  }
+
 }
