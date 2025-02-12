@@ -4,6 +4,7 @@ import { MessageDto } from '../model/message.dto';
 import { MESSAGE_EVENTS } from '../enum/message-action.enum';
 import { IngresoSolicitudesPendienteDto } from '../model/ingreso-solicitudes-pendiente.dto';
 import { MessageService } from '../services/message.service';
+import { IngresoSolicitudesPendienteUsersDto } from '../model/ingreso-solicitudes-pendientes-users.dto';
 
 @Controller('message')
 export class MessageController {
@@ -56,6 +57,12 @@ export class MessageController {
       );
     });
     return 'Mensaje enviado a todos los clientes con solicitudes pendientes';
+  }
+  @Post('ingreso-solicitudes-pendientes-users')
+  sendMessageToAllClientsWithUserIdForPendingRequests(
+    @Body() body: IngresoSolicitudesPendienteUsersDto,
+  ) {
+    return this.messageService.sendMessageToAllClientsWithUserIdForPendingRequests(body);
   }
 
   @Post('simple')

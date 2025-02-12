@@ -4,6 +4,7 @@ import { Socket } from 'socket.io';
 import { SuscribePayload } from 'src/alerts-request-management/model/suscribe.payload';
 import { MESSAGE_EVENTS } from '../enum/message-action.enum';
 import { MessageDto } from '../model/message.dto';
+import { IngresoSolicitudesPendienteUsersDto } from '../model/ingreso-solicitudes-pendientes-users.dto';
 
 @Injectable()
 export class MessageService {
@@ -19,6 +20,22 @@ export class MessageService {
       c.emit(MESSAGE_EVENTS.PENDING_REQUESTS_WERE_ADDED_BY_USER + data.userId
       );
     });
+  }
+  sendMessageToAllClientsWithUserIdForPendingRequests(body: IngresoSolicitudesPendienteUsersDto) {
+    const message = body.message ?? 'Mensaje vacío';
+
+    this.wsConnectionsService.getAllConnections().forEach(client => {
+      const userId = this.wsConnectionsService.getUserId(client);
+      if(body.userIdsToExcludeOfNotification?.length && body.userIdsToExcludeOfNotification?.includes(userId)){
+        return;
+      }
+      if (!body.userIds.includes(userId)) return;
+      client.emit(
+        MESSAGE_EVENTS.PENDING_REQUESTS_BY_USER + userId,
+        {message, title: body.title, codigoNotificacion: body.codigoNotificacion}
+      );
+    });
+    return 'Mensaje enviado a todos los clientes indicados';
   }
   handleSimpleMessageClosedByUser(
     client: Socket,
