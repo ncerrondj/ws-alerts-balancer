@@ -45,7 +45,7 @@ Ahora el Caprinet no hara la consulta al api principal cada 3 minutos, sino que 
   ```
 2. Ejecuta el contenedor:
   ```bash
-  docker run -d -p 40325:40325 -e PORT=40325  --name ws-alerts-balancer-app ws-alerts-balancer
+  docker run -d -p 5001:5001 -e PORT=5001  --name ws-alerts-balancer-app ws-alerts-balancer
   ```
 
 ## Licencia

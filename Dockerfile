@@ -4,7 +4,8 @@ COPY package.json /app
 RUN npm install --legacy-peer-deps
 COPY . /app
 RUN npm run build
-EXPOSE 40325
+EXPOSE 5001
 CMD ["npm", "run", "start:prod"]
-## docker build -t ws-alerts-balancer .
-## docker run -d -p 40325:40325 -e PORT=40325  --name ws-alerts-balancer-app ws-alerts-balancer
+## docker build --no-cache -t ws-alerts-balancer .
+## docker run -d -p 5001:5001 -e PORT=5001  --name ws-alerts-balancer-app ws-alerts-balancer
+## docker run -d -p 5001:5001 --name ws-alerts-balancer-app ws-alerts-balancer

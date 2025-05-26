@@ -5,6 +5,8 @@ import { AlertsRequestManagementModule } from './alerts-request-management/alert
 import { ScheduleModule } from '@nestjs/schedule';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MessageModule } from './messages/message.module';
+import { HttpModule } from '@nestjs/axios';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { MessageModule } from './messages/message.module';
       max: 500,
       isGlobal: true,
     }),
+    HttpModule,
+    ConfigModule.forRoot({isGlobal: true})
   ],
   controllers: [AppController],
   providers: [AppService],

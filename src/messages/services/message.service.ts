@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { WsConnectionsService } from 'src/alerts-request-management/services/ws-connections.service';
+import { WsConnectionsService } from '../../alerts-request-management/services/ws-connections.service';
 import { Socket } from 'socket.io';
-import { SuscribePayload } from 'src/alerts-request-management/model/suscribe.payload';
+import { SuscribePayload } from '../../alerts-request-management/model/suscribe.payload';
 import { MESSAGE_EVENTS } from '../enum/message-action.enum';
 import { MessageDto } from '../model/message.dto';
 import { IngresoSolicitudesPendienteUsersDto } from '../model/ingreso-solicitudes-pendientes-users.dto';

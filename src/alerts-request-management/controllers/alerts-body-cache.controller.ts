@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { AlertsBodyCacheService } from 'src/alerts-request-management/services/alerts-body-cache.service';
+import { AlertsBodyCacheService } from '../../alerts-request-management/services/alerts-body-cache.service';
 import { WsConnectionsService } from '../services/ws-connections.service';
 import { RequestQueueService } from '../services/request-queue-service.service';
 

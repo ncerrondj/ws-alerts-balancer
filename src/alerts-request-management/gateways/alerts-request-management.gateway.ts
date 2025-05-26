@@ -15,8 +15,8 @@ import { ShareAlertBodyPayload } from '../model/share-alert-body.payload';
 import { AskForPermissionForGetAlertsPayload } from '../model/ask-for-permission_for_get_alerts.payload';
 import { SetCachedDataPayload } from '../model/set-cached-data.payload';
 import { AlertsBodyCacheService } from '../services/alerts-body-cache.service';
-import { MessageService } from 'src/messages/services/message.service';
-import { MESSAGE_ACTIONS } from 'src/messages/enum/message-action.enum';
+import { MessageService } from '../../messages/services/message.service';
+import { MESSAGE_ACTIONS } from '../../messages/enum/message-action.enum';
 @WebSocketGateway({
   namespace: 'alerts-request-management',
   cors: { origin: '*' },
