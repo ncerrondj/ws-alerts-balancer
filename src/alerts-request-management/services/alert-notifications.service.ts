@@ -1,6 +1,7 @@
 import { ALERT_NOTIFICATIONS_MANAGEMENT_EVENT } from '../enums/alert-notifications-management-action.enum';
 import { BaseAlert } from '../model/base-alert';
 import { EmitAlertMessagePayload } from '../model/emit-alert-message.payload';
+import { MarkNotificationAsRead } from '../model/mark-notification-as-read.dto';
 import { RemoveAlertNotificaionDto } from '../model/remove-alert-notifications.dto';
 import { HttpServiceImpl } from './htpp-service.service';
 import { WsAlertsConnectionsService } from './ws-alerts-connections.service';
@@ -14,10 +15,13 @@ export class AlertNotificationService {
   ) {}
 
   async emitMessage(payload: EmitAlertMessagePayload) {
+    console.log('Emit message');
+    console.log({payload});
     const res = await this.httpService.post({
       path: 'notificacion-alerta/registrar',
       data: payload
     }) as any;
+    console.log({res});
     payload.codigoAlerta = res.codigoAlerta;
     res.codigosUsuariosObjetivos?.forEach(userId => {
       this.wsAlertsConnectionsService.getConnections(userId.toString()).forEach(c => {
@@ -32,6 +36,14 @@ export class AlertNotificationService {
           codigoAlerta: options.codigoAlerta
         })
       });
+    });
+  }
+  markNotificationAsRead(options: MarkNotificationAsRead) {
+    const {codigoUsuario} = options;
+    this.wsAlertsConnectionsService.getConnections(codigoUsuario).forEach(c => {
+      c.emit(ALERT_NOTIFICATIONS_MANAGEMENT_EVENT.MARK_ALERT_AS_READ_FOR_USER.concat(codigoUsuario), {
+        codigoRecepcionAlerta: options.codigoRecepcionAlerta
+      })
     });
   }
 }
