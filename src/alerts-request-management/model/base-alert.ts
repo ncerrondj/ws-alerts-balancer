@@ -9,5 +9,5 @@ export class BaseAlert<T> {
   FECHA_CREACION: string;
   CODIGO_RECEPCION: string;
   MARCADO_LEIDO: boolean;
-  CODIGOS_USUARIOS_OBJETIVOS_CON_PERMISOS: string[];
+  CODIGOS_USUARIOS_OBJETIVOS: string[];
 }

@@ -1,5 +1,9 @@
 import { SuscribePayload } from './suscribe.payload';
-
+export class AlertTargets {
+  codigosUsuariosObjetivos: string[];
+  codigosPerfilesObjectivos: string[];
+  codigosAreasObjetivos: string[]
+}
 export class EmitAlertMessagePayload extends SuscribePayload {
   codigoTipoAlerta: number;
   codigoUsuarioOrigen: number;
@@ -8,5 +12,5 @@ export class EmitAlertMessagePayload extends SuscribePayload {
   fechaAutodestruccion: string;
   data: any;
   codigoAlerta: string;
-  codigosUsuariosObjetivos: number[]
+  objetivos: AlertTargets;
 }
