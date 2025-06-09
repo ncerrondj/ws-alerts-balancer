@@ -23,8 +23,10 @@ export class AlertNotificationService {
     }) as any;
     console.log({res});
     payload.codigoAlerta = res.codigoAlerta;
-    res.codigosUsuariosObjetivos?.forEach(userId => {
-      this.wsAlertsConnectionsService.getConnections(userId.toString()).forEach(c => {
+    res.codigosUsuariosObjetivos?.forEach((userId: string) => {
+      const connections = this.wsAlertsConnectionsService.getConnections(userId.toString());
+      console.log(`Mandando a ${userId}, con ${connections.length} conexiones`);
+      connections?.forEach(c => {
         c.emit(ALERT_NOTIFICATIONS_MANAGEMENT_EVENT.EMIT_ALERT_TO_USER.concat(userId.toString()), payload);
       });
     });

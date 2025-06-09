@@ -12,5 +12,6 @@ export class EmitAlertMessagePayload extends SuscribePayload {
   fechaAutodestruccion: string;
   data: any;
   codigoAlerta: string;
+  codigoPlantilla: string;
   objetivos: AlertTargets;
 }

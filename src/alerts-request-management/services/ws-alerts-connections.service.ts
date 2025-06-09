@@ -6,6 +6,26 @@ import { SuscribePayload } from '../model/suscribe.payload';
 @Injectable()
 export class WsAlertsConnectionsService {
   
+  
+  getLogs() {
+    const userConnections: { [key: string]: any } = {};
+    const logs: { [key: string]: any } = {};
+    const userIds = this.getConnectedUsers();
+    for (const userId of userIds) {
+      const parameters = this.getClientParameters(userId);
+      userConnections[userId] = {
+        TotalConnections: this.getConnections(userId).length,
+        Connections: this.getConnections(userId)
+          .map((c) => c.id),
+        PerfilIds: parameters.perfilIds,
+      };
+    }
+    logs.TotalConnections = this.getAllConnections().length;
+    logs.ConnectedUsers = userIds.length;
+    logs.UserConnections = userConnections;
+    return logs;
+  }
+  
   private readonly connections: ClientGroups = {};
 
   addConnectionIfNecessary(suscribePayload: SuscribePayload, client: Socket) {
