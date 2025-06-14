@@ -1,4 +1,5 @@
 export class MarkNotificationAsRead {
-  codigoRecepcionAlerta: string;
+  codigoAlerta: string;
+  codigoTipoAlerta: string;
   codigoUsuario: string;
 }
