@@ -1,0 +1,42 @@
+commit 4c570a293411cf5433ff6554480206782db35a22
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Thu May 29 18:07:08 2025 -0500
+
+    Marcado como leido por usuario completado
+
+ .../controllers/alert-notification.controller.ts             |  9 ++++++++-
+ .../enums/alert-notifications-management-action.enum.ts      |  3 ++-
+ .../model/mark-notification-as-read.dto.ts                   |  4 ++++
+ .../services/alert-notifications.service.ts                  | 12 ++++++++++++
+ 4 files changed, 26 insertions(+), 2 deletions(-)
+
+commit ab69884c35dbddc92223e78c21def3a1868b05b4
+Author: nickrayan <nickcerron@gmail.com>
+Date:   Mon May 26 16:08:32 2025 -0500
+
+    ready to test
+
+ .env.dev                                           |    1 +
+ .gitignore                                         |    1 +
+ Dockerfile                                         |    7 +-
+ README.md                                          |    2 +-
+ package-lock.json                                  | 9673 ++++++++++++++++++++
+ package.json                                       |    5 +-
+ .../alerts-request-management.module.ts            |   15 +-
+ .../controllers/alert-notification.controller.ts   |   18 +
+ .../controllers/alerts-body-cache.controller.ts    |    2 +-
+ .../alert-notifications-management-action.enum.ts  |    9 +
+ .../gateways/alert-notification.gateway.ts         |   42 +
+ .../gateways/alerts-request-management.gateway.ts  |    4 +-
+ src/alerts-request-management/model/base-alert.ts  |   13 +
+ .../model/emit-alert-message.payload.ts            |   12 +
+ .../model/remove-alert-notifications.dto.ts        |    4 +
+ .../services/alert-notifications.service.ts        |   37 +
+ .../services/htpp-service.service.ts               |   27 +
+ .../services/interfaces/http-post-params.ts        |    4 +
+ .../services/ws-alerts-connections.service.ts      |   92 +
+ src/app.module.ts                                  |    4 +
+ src/main.ts                                        |    2 +-
+ src/messages/message.module.ts                     |    2 +-
+ src/messages/services/message.service.ts           |    4 +-
+ 23 files changed, 9966 insertions(+), 14 deletions(-)

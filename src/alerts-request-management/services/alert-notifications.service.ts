@@ -1,9 +1,11 @@
+import { Socket } from 'socket.io';
 import { ALERT_NOTIFICATIONS_MANAGEMENT_EVENT } from '../enums/alert-notifications-management-action.enum';import { EmitAlertMessagePayload } from '../model/emit-alert-message.payload';
 import { MarkNotificationAsRead } from '../model/mark-notification-as-read.dto';
 import { RemoveAlertNotificaionDto } from '../model/remove-alert-notifications.dto';
 import { HttpServiceImpl } from './htpp-service.service';
 import { WsAlertsConnectionsService } from './ws-alerts-connections.service';
 import { Injectable } from '@nestjs/common';
+import { RegisterAlertResponseDto } from '../model/register-response.dto';
 
 @Injectable()
 export class AlertNotificationService {
@@ -12,13 +14,13 @@ export class AlertNotificationService {
     private readonly httpService: HttpServiceImpl
   ) {}
 
-  async emitMessage(payload: EmitAlertMessagePayload) {
+  async emitMessage(payload: EmitAlertMessagePayload, client?: Socket) {
     console.log('Emit message');
     console.log({payload});
-    const res = await this.httpService.post({
+    const res = await this.httpService.post<any, RegisterAlertResponseDto>({
       path: 'notificacion-alerta/registrar',
       data: payload
-    }) as any;
+    });
     console.log({res});
     payload.codigoAlerta = res.codigoAlerta;
     res.codigosUsuariosObjetivos?.forEach((userId: string) => {
@@ -28,6 +30,10 @@ export class AlertNotificationService {
         c.emit(ALERT_NOTIFICATIONS_MANAGEMENT_EVENT.EMIT_ALERT_TO_USER.concat(userId.toString()), payload);
       });
     });
+    if (client) {
+      client.emit(ALERT_NOTIFICATIONS_MANAGEMENT_EVENT.EMISSION_RESPONSE, res);
+    }
+    return res;
   }
   removeNotification(options: RemoveAlertNotificaionDto) {
     options.codigosUsuariosObjetivos.forEach(codUsuario => {

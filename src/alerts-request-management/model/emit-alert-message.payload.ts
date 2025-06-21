@@ -4,6 +4,10 @@ export class AlertTargets {
   codigosPerfilesObjectivos: string[];
   codigosAreasObjetivos: string[]
 }
+export class MapeoFinalizacion {
+  codigoReferencia: string;
+  codigoReferencia2: string;
+}
 export class EmitAlertMessagePayload extends SuscribePayload {
   codigoTipoAlerta: number;
   codigoUsuarioOrigen: number;
@@ -14,4 +18,5 @@ export class EmitAlertMessagePayload extends SuscribePayload {
   codigoAlerta: string;
   codigoPlantilla: string;
   objetivos: AlertTargets;
+  mapeoFinalizacion: MapeoFinalizacion;
 }
