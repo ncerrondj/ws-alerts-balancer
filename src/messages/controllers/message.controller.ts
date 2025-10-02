@@ -1,5 +1,5 @@
 import { Body, Controller, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
-import { WsConnectionsService } from '../../alerts-request-management/services/ws-connections.service';
+import { WsConnectionsService } from '../../modules/alerts-request-management/services/ws-connections.service';
 import { MessageDto } from '../model/message.dto';
 import { MESSAGE_EVENTS } from '../enum/message-action.enum';
 import { IngresoSolicitudesPendienteDto } from '../model/ingreso-solicitudes-pendiente.dto';

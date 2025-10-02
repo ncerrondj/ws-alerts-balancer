@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { WsConnectionsService } from '../../alerts-request-management/services/ws-connections.service';
+import { WsConnectionsService } from '../../modules/alerts-request-management/services/ws-connections.service';
 import { Socket } from 'socket.io';
-import { SuscribePayload } from '../../alerts-request-management/model/suscribe.payload';
+import { SuscribePayload } from '../../modules/alerts-request-management/model/suscribe.payload';
 import { MESSAGE_EVENTS } from '../enum/message-action.enum';
 import { MessageDto } from '../model/message.dto';
 import { IngresoSolicitudesPendienteUsersDto } from '../model/ingreso-solicitudes-pendientes-users.dto';
@@ -48,7 +48,6 @@ export class MessageService {
   } );
   }
   sendSimpleMessage(messageDto: MessageDto, perfilId?: number) {
-    console.log({messageDto, perfilId});
     const connections: Socket[] = this.getConnectionsByOptionalPerfilId(perfilId);
     const {message, title, userIdsToExcludeOfNotification = []} = messageDto;
     const event = perfilId ? MESSAGE_EVENTS.SIMPLE_CUSTOM_MESSAGE_BY_PERFIL + perfilId : MESSAGE_EVENTS.SIMPLE_CUSTOM_MESSAGE;
