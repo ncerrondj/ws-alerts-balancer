@@ -3,7 +3,8 @@ export enum BloqueosCaprinetConditions {
   LIST = 'L',
   KILL = 'K',
   GET_ACTIVES_BY_USER_ID = 'A',
-  RESCHEDULE = 'R'
+  RESCHEDULE = 'R',
+  RESCHEDULE_BY_MAP = 'P'
 } 
 export interface IBloqueosCaprinetSpParams {
   condition: BloqueosCaprinetConditions;
@@ -15,4 +16,8 @@ export interface IBloqueosCaprinetSpParams {
   scheduledCreationDate: string;
   reschedulingDatetime: string;
   death: boolean;
+  referenceCode: string;
+  referenceCode2: string;
+  referenceCode3: string;
+  userId: number;
 }

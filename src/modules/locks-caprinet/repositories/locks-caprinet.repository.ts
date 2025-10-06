@@ -7,7 +7,7 @@ import { ILockCaprinet } from '../interfaces/lock-caprinet';
 import { BloqueosCaprinetConditions, IBloqueosCaprinetSpParams } from '../../../database/sp/interfaces/bloqueos-caprinet-params.sp';
 import { ICreateLockCaprinetParams } from '../interfaces/create-lock-caprinet-params';
 import { DbUtils } from '../../../database/utils/db.utils';
-import { IReprogramLocks } from '../interfaces/reprogram-locks.params';
+import { IReprogramLocks, IReprogramLocksByMap } from '../interfaces/reprogram-locks.params';
 
 @Injectable()
 export class LocksCaprinetRepository {
@@ -51,6 +51,17 @@ export class LocksCaprinetRepository {
       newBkCodesForReprogramations
     };
   }
+  async reprogramLockByMap(params: IReprogramLocksByMap) {
+    const paramsArray = this.getFinalParams(params, BloqueosCaprinetConditions.RESCHEDULE_BY_MAP);
+    const rows =  await this.db.callProcedure(BloqueosCaprinetSp.CrudBloqueos, paramsArray);
+    const res = rows[0][0];
+    const newBkCodesForReprogramations = res.CODIGOS_BK_CREADOS as string;
+    const abortedBkCodes = res.CODIGOS_BK_ABORTADOS as string;
+    return {
+      newBkCodesForReprogramations,
+      abortedBkCodes
+    };
+  }
   private getFinalParams(params: Partial<IBloqueosCaprinetSpParams>, condition: BloqueosCaprinetConditions) {
     const final: IBloqueosCaprinetSpParams = {
       ...BloqueosCaprinetSpDefaults.crud,
@@ -65,7 +76,11 @@ export class LocksCaprinetRepository {
       final.targetUserId,
       final.scheduledCreationDate,
       final.death,
-      DbUtils.toValidDate(final.reschedulingDatetime)
+      DbUtils.toValidDate(final.reschedulingDatetime),
+      final.referenceCode,
+      final.referenceCode2,
+      final.referenceCode3,
+      final.userId,
     ];
     return paramsArray;
   }

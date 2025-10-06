@@ -4,7 +4,7 @@ import { ProgramLockDto } from '../dtos/program-lock.dto';
 import { GetLocksDto } from '../dtos/get-locks.dto';
 import { KillMapReferencesDto } from '../dtos/kill-map-references.dto';
 import { NotifyLocksCloseDto } from '../dtos/notify-locks-close.dto';
-import { ReprogramLockDto } from '../dtos/reprogram-lock.dto';
+import { ReprogramLockByMapDto, ReprogramLockDto } from '../dtos/reprogram-lock.dto';
 
 @Controller('locks-caprinet')
 export class LocksCaprinetController {
@@ -52,4 +52,10 @@ export class LocksCaprinetController {
   ) {
     return await this.lockCaprinetService.reprogram(data);
   }
+  @Post('reprogram-by-map')
+  async reprogramByMap(
+    @Body() data: ReprogramLockByMapDto
+  ){
+    return await this.lockCaprinetService.reprogramByMap(data);
+  } 
 }

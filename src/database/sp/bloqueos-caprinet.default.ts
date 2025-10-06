@@ -37,7 +37,10 @@ export class BloqueosCaprinetSpDefaults {
     targetUserId: null,
     scheduledCreationDate: null,
     death: null,
-    reschedulingDatetime: null
-    
+    reschedulingDatetime: null,
+    referenceCode: null,
+    referenceCode2: null,
+    referenceCode3: null,
+    userId: null
   };
 }

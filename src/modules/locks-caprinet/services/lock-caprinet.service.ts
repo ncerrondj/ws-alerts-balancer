@@ -9,7 +9,7 @@ import { WsAlertsConnectionsService } from '../../../modules/alerts-request-mana
 import { LOCK_ACTION } from '../enums/lock-action.enum';
 import { GetLocksDto } from '../dtos/get-locks.dto';
 import { NotifyLocksCloseDto } from '../dtos/notify-locks-close.dto';
-import { ReprogramLockDto } from '../dtos/reprogram-lock.dto';
+import { ReprogramLockByMapDto, ReprogramLockDto } from '../dtos/reprogram-lock.dto';
 import { IncidentRepository } from '../../../modules/incidents/repositories/incidents.repository';
 import { DbUtils } from '../../../database/utils/db.utils';
 
@@ -176,12 +176,24 @@ export class LockCaprinetService implements OnModuleInit {
     const {newBkCodesForReprogramations} = await this.locksCaprinetRepository.reprogramLocksByTypeAndTargetUser({
       lockTypeId: data.lockTypeId,
       reschedulingDatetime: data.reschedulingDatetime,
-      targetUserId: data.unlockUserId
+      targetUserId: data.unlockUserId,
+      userId: data.userId
     });
-    const bks = await this.bkLockCaprinetRepository.getAll({
-      codes: newBkCodesForReprogramations
-    });
+    await this.reprogramByBkCodes(newBkCodesForReprogramations);
+    const reschedulingDatetime = new Date(data.reschedulingDatetime);
+    const now = new Date();
 
+    if (reschedulingDatetime >= now) {
+      this.wsAlertsConnectionsService.getConnections(data.unlockUserId.toString()).forEach(c => {
+        c.emit(LOCK_ACTION.UNLOCK_TO_USER.concat(data.unlockUserId.toString()), {lockTypeId: data.lockTypeId});
+      });
+    }
+    return { success: true };
+  }
+  private async reprogramByBkCodes(codes: string) {
+    const bks = await this.bkLockCaprinetRepository.getAll({
+      codes
+    });
     bks.forEach(bk => {
       this.programLock({
         lockTypeId: bk.CODIGO_TIPO_BLOQUEO,
@@ -195,15 +207,21 @@ export class LockCaprinetService implements OnModuleInit {
         }
       }, bk.CODIGO);
     });
-    const reschedulingDatetime = new Date(data.reschedulingDatetime);
-    const now = new Date();
-
-    if (reschedulingDatetime >= now) {
-      this.wsAlertsConnectionsService.getConnections(data.unlockUserId.toString()).forEach(c => {
-        c.emit(LOCK_ACTION.UNLOCK_TO_USER.concat(data.unlockUserId.toString()), {lockTypeId: data.lockTypeId});
-      });
-    }
-    return { success: true };
+    return bks;
+  }
+  async reprogramByMap(data: ReprogramLockByMapDto) {
+    const {newBkCodesForReprogramations, abortedBkCodes} = await this.locksCaprinetRepository.reprogramLockByMap({
+      lockTypeId: data.lockTypeId,
+      reschedulingDatetime: data.reschedulingDatetime,
+      referenceCode: data.referenceCode,
+      referenceCode2: data.referenceCode2,
+      referenceCode3: data.referenceCode3
+    });
+    await this.reprogramByBkCodes(newBkCodesForReprogramations);
+    abortedBkCodes.split(',').forEach(bkCode => {
+      this.taskService.cancel(bkCode);
+    });
+    return {success:true};
   }
   async notifyLocksClose(data: NotifyLocksCloseDto) {
     const connections = this.wsAlertsConnectionsService.getConnections(
