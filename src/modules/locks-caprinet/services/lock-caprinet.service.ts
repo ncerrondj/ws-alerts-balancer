@@ -12,6 +12,8 @@ import { NotifyLocksCloseDto } from '../dtos/notify-locks-close.dto';
 import { ReprogramLockByMapDto, ReprogramLockDto } from '../dtos/reprogram-lock.dto';
 import { IncidentRepository } from '../../../modules/incidents/repositories/incidents.repository';
 import { DbUtils } from '../../../database/utils/db.utils';
+import { TIMES_MILLISECONDS } from '../../../utils/times.util';
+import { LocksPostponementManagerService } from './locks-postponement-manager.service';
 
 @Injectable()
 export class LockCaprinetService implements OnModuleInit {
@@ -24,12 +26,14 @@ export class LockCaprinetService implements OnModuleInit {
     private readonly locksCaprinetRepository: LocksCaprinetRepository,
     private readonly wsAlertsConnectionsService: WsAlertsConnectionsService,
     private readonly incidentsRepository: IncidentRepository,
+    private readonly locksPostponementManagerService: LocksPostponementManagerService
   ) {}
   async onModuleInit() {
     const bks = await this.bkLockCaprinetRepository.getAll({
       created: false,
       aborted: false,
     });
+    console.log({bks});
     bks.forEach((bk) => {
       this.programLock(
         {
@@ -102,6 +106,14 @@ export class LockCaprinetService implements OnModuleInit {
 
   async thorwLock(bkLockId: number, data: ProgramLockDto) {
     //agregar codigo bloqueo opcional al mapping
+    const canThrowLock = await this.locksPostponementManagerService.canThrowLock({
+      lockTypeId: data.lockTypeId,
+      data
+    });
+    if (!canThrowLock) {
+      this.postponeLock(bkLockId, data);
+      return;
+    }
     const { cancelMap, lockTypeId } = data;
     const res = await this.locksCaprinetRepository.create({
       bkLockId,
@@ -112,7 +124,7 @@ export class LockCaprinetService implements OnModuleInit {
     });
     const lockId = res.id;
     await this.bkLockCaprinetRepository.lockCreated(bkLockId);
-    const resMap = await this.locksExistenceMappingRepository.create({
+    await this.locksExistenceMappingRepository.create({
       lockTypeId,
       referenceCode: cancelMap.referenceCode,
       referenceCode2: cancelMap.referenceCode2,
@@ -127,6 +139,25 @@ export class LockCaprinetService implements OnModuleInit {
     connections.forEach((client) => {
       client.emit(LOCK_ACTION.THROW_LOCK_TO_USER.concat(targetUserId), data);
     });
+  }
+  async postponeLock(bkLockId: number, data: ProgramLockDto) {
+    const newScheduleTime = new Date();
+    const millisecondsToAdd = TIMES_MILLISECONDS.ONE_DAY;
+    newScheduleTime.setTime(newScheduleTime.getTime() + millisecondsToAdd);
+    const newScheduleTimeJson = newScheduleTime.toJSON();
+    data.scheduledCreationDate = newScheduleTimeJson;
+    await this.bkLockCaprinetRepository.postpone({
+      id: bkLockId,
+      datetime: newScheduleTimeJson
+    });
+    this.taskService.program(
+      bkLockId.toString(),
+      newScheduleTime,
+      async () => {
+        this.throwLockHandle(bkLockId, data);
+      },
+    );
+    this.logger.warn(`Tarea con id ${bkLockId} pospuesta para ${newScheduleTime.toLocaleString('es-PE', { timeZone: 'America/Lima' })}`);
   }
   async killMapReferences(data: KillMapReferencesDto) {
     const { lockTypeId, referenceCode, referenceCode2, referenceCode3 } = data;
@@ -232,4 +263,5 @@ export class LockCaprinetService implements OnModuleInit {
     });
     return { success: true };
   }
+
 }

@@ -2,6 +2,8 @@ import { IGetPendingRegularizationSpParams } from "./interfaces/get-pending-regu
 
 export class PendingRegularizationSpDefaults {
     static readonly getForAlerts: IGetPendingRegularizationSpParams = {
-        codes: '0'
+        condition: null,
+        codes: '0',
+        id: 0
     };
 }

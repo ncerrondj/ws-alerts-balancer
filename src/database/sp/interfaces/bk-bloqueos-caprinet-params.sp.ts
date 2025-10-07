@@ -2,7 +2,8 @@ export enum BkBloqueosCaprinetConditions {
   INSERT = 'I',
   LIST = 'L',
   LOCK_CREATED = 'C',
-  ABORT = 'A'
+  ABORT = 'A',
+  POSTPONE = 'P'
 } 
 export interface IBkBloqueosCaprinetSpParams {
   condition: BkBloqueosCaprinetConditions;

@@ -9,6 +9,7 @@ import { ICreateBkLockCaprinetParams } from '../interfaces/create-bk-lock-caprin
 import { DbUtils } from '../../../database/utils/db.utils';
 import { IAbortBkLockCaprinetParams } from '../interfaces/abort-bk-lock-params';
 import { ReprogramLockDto } from '../dtos/reprogram-lock.dto';
+import { IPostponeLockParams } from '../interfaces/postpone-lock-params';
 
 @Injectable()
 export class BkLocksCaprinetRepository {
@@ -45,7 +46,13 @@ export class BkLocksCaprinetRepository {
     }, BkBloqueosCaprinetConditions.ABORT);
     await this.db.callProcedure(BloqueosCaprinetSp.CrudBkBloqueos, paramsArray);
   }
-
+  async postpone(params: IPostponeLockParams) {
+    const paramsArray = this.getFinalParams({
+      code: params.id,
+      scheduledCreationDate: params.datetime
+    }, BkBloqueosCaprinetConditions.POSTPONE);
+    await this.db.callProcedure(BloqueosCaprinetSp.CrudBkBloqueos, paramsArray);
+  }
   private getFinalParams(params: Partial<IBkBloqueosCaprinetSpParams>, condition: BkBloqueosCaprinetConditions) {
     const final: IBkBloqueosCaprinetSpParams = {
       ...BloqueosCaprinetSpDefaults.bkCrud,

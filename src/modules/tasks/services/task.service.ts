@@ -16,7 +16,7 @@ export class TaskService {
       this.jobs.delete(id);
     });
     this.jobs.set(id, job);
-    this.logger.log(`Tarea con id '${id}' programada para ${date.toISOString()}`);
+    this.logger.log(`Tarea con id '${id}' programada para ${date.toLocaleString('es-PE', { timeZone: 'America/Lima' })}`);
   }
   cancel(id: string) {
     const job = this.jobs.get(id);
