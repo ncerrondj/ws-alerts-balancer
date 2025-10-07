@@ -158,6 +158,7 @@ export class LockCaprinetService implements OnModuleInit {
       },
     );
     this.logger.warn(`Tarea con id ${bkLockId} pospuesta para ${newScheduleTime.toLocaleString('es-PE', { timeZone: 'America/Lima' })}`);
+    this.logger.warn(JSON.stringify(data, null, 2));
   }
   async killMapReferences(data: KillMapReferencesDto) {
     const { lockTypeId, referenceCode, referenceCode2, referenceCode3 } = data;
