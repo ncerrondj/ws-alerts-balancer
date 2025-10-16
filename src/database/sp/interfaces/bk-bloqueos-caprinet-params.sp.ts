@@ -3,7 +3,8 @@ export enum BkBloqueosCaprinetConditions {
   LIST = 'L',
   LOCK_CREATED = 'C',
   ABORT = 'A',
-  POSTPONE = 'P'
+  POSTPONE = 'P',
+  CANCEL_BY_ID = 'T'
 } 
 export interface IBkBloqueosCaprinetSpParams {
   condition: BkBloqueosCaprinetConditions;

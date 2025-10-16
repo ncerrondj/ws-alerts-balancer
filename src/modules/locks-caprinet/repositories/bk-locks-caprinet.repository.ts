@@ -53,6 +53,12 @@ export class BkLocksCaprinetRepository {
     }, BkBloqueosCaprinetConditions.POSTPONE);
     await this.db.callProcedure(BloqueosCaprinetSp.CrudBkBloqueos, paramsArray);
   }
+  async cancelById(bkId: number) {
+    const paramsArray = this.getFinalParams({
+      code: bkId
+    }, BkBloqueosCaprinetConditions.CANCEL_BY_ID);
+    await this.db.callProcedure(BloqueosCaprinetSp.CrudBkBloqueos, paramsArray);
+  }
   private getFinalParams(params: Partial<IBkBloqueosCaprinetSpParams>, condition: BkBloqueosCaprinetConditions) {
     const final: IBkBloqueosCaprinetSpParams = {
       ...BloqueosCaprinetSpDefaults.bkCrud,

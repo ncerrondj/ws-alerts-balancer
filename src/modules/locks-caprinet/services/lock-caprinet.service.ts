@@ -264,5 +264,11 @@ export class LockCaprinetService implements OnModuleInit {
     });
     return { success: true };
   }
-
+  async cancelLock(bkId: number) {
+    this.taskService.cancel(bkId.toString());
+    await this.bkLockCaprinetRepository.cancelById(bkId);
+    return {
+      success: true
+    };
+  }
 }

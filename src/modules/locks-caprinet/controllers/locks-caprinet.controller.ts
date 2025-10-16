@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { LockCaprinetService } from '../services/lock-caprinet.service';
 import { ProgramLockDto } from '../dtos/program-lock.dto';
 import { GetLocksDto } from '../dtos/get-locks.dto';
@@ -57,5 +57,11 @@ export class LocksCaprinetController {
     @Body() data: ReprogramLockByMapDto
   ){
     return await this.lockCaprinetService.reprogramByMap(data);
+  }
+  @Delete('cancel/:bkId')
+  async cancel(
+    @Param('bkId') bkId: number
+  ) {
+    return await this.lockCaprinetService.cancelLock(bkId);
   } 
 }
