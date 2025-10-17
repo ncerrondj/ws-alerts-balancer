@@ -184,7 +184,8 @@ export class LockCaprinetService implements OnModuleInit {
       const promises = [];
       for (const map of existencesMapping.filter((e) => e.CODIGO_BLOQUEO)) {
         promises.push(
-          this.locksCaprinetRepository.killById(map.CODIGO_BLOQUEO),
+          //this.locksCaprinetRepository.killById(map.CODIGO_BLOQUEO),
+          this.killLockById(map.CODIGO_BLOQUEO)
         );
       }
       await Promise.all(promises);
@@ -272,5 +273,18 @@ export class LockCaprinetService implements OnModuleInit {
     return {
       success: true
     };
+  }
+  private async killLockById(lockId: number) {
+    const lock = await this.locksCaprinetRepository.getById(lockId);
+    if(!lock) return;
+    await this.locksCaprinetRepository.killById(lockId);
+    const actives = await this.getActivesByUserTargetId(lock.CODIGO_USUARIO_DESTINO);
+    //quiere decir q este bloqueo fue el ultimo del tipo
+    if (actives.every(active => active.CODIGO_TIPO_BLOQUEO != lock.CODIGO_TIPO_BLOQUEO)) {
+      const codigoUsuarioDestino = lock.CODIGO_USUARIO_DESTINO.toString();
+      this.wsAlertsConnectionsService.getConnections(codigoUsuarioDestino).forEach(c => {
+        c.emit(LOCK_ACTION.UNLOCK_TO_USER.concat(codigoUsuarioDestino), {lockTypeId: lock.CODIGO_TIPO_BLOQUEO});
+      })
+    }
   }
 }

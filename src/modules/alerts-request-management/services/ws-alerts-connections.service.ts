@@ -66,6 +66,9 @@ export class WsAlertsConnectionsService {
       delete this.connections[userId];
     }
   }
+  /**
+  * Obtener todas las conexiones de un usuario por su id
+  */
   getConnections(userId: string): Socket[] {
     return this.connections[userId]?.connections || [];
   }

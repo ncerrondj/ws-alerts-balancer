@@ -22,7 +22,7 @@ export class LocksCaprinetRepository {
     return rows[0]?.map(DbUtils.normalizeRow) ?? [];
   }
   
-  async getActivesByUserId(targetUserId: number): Promise<{CODIGO_TIPO_BLOQUEO: number}> {
+  async getActivesByUserId(targetUserId: number): Promise<{CODIGO_TIPO_BLOQUEO: number}[]> {
     const paramsArray = this.getFinalParams({targetUserId}, BloqueosCaprinetConditions.GET_ACTIVES_BY_USER_ID);
     const rows = await this.db.callProcedure(BloqueosCaprinetSp.CrudBloqueos, paramsArray);
     return rows[0]?.map(DbUtils.normalizeRow) ?? [];
@@ -61,6 +61,12 @@ export class LocksCaprinetRepository {
       newBkCodesForReprogramations,
       abortedBkCodes
     };
+  }
+  async getById(id: number) {
+    const rows = await this.getAll({
+      code: id,
+    });
+    return rows[0];
   }
   private getFinalParams(params: Partial<IBloqueosCaprinetSpParams>, condition: BloqueosCaprinetConditions) {
     const final: IBloqueosCaprinetSpParams = {
