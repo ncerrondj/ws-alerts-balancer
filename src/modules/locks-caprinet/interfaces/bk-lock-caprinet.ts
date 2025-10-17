@@ -9,4 +9,5 @@ export interface IBkLockCaprinet {
   CODIGO_REFERENCIA: string;
   CODIGO_REFERENCIA_2: string;
   CODIGO_REFERENCIA_3: string;
+  ABORTADO: boolean;
 }

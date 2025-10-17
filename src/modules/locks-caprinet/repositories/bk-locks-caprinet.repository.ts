@@ -40,6 +40,7 @@ export class BkLocksCaprinetRepository {
   }
   async abort(params: IAbortBkLockCaprinetParams): Promise<void> {
     const paramsArray = this.getFinalParams({
+      lockTypeId: params.lockTypeId,
       referenceCode: params.referenceCode,
       referenceCode2: params.referenceCode2,
       referenceCode3: params.referenceCode3
@@ -58,6 +59,12 @@ export class BkLocksCaprinetRepository {
       code: bkId
     }, BkBloqueosCaprinetConditions.CANCEL_BY_ID);
     await this.db.callProcedure(BloqueosCaprinetSp.CrudBkBloqueos, paramsArray);
+  }
+  async getById(id: number) {
+    const rows = await this.getAll({
+      code: id,
+    });
+    return rows[0];
   }
   private getFinalParams(params: Partial<IBkBloqueosCaprinetSpParams>, condition: BkBloqueosCaprinetConditions) {
     const final: IBkBloqueosCaprinetSpParams = {

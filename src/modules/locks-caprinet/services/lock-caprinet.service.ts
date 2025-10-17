@@ -93,6 +93,8 @@ export class LockCaprinetService implements OnModuleInit {
 
   async throwLockHandle(bkLockId: number, data: ProgramLockDto) {
     const { lockTypeId, cancelMap } = data;
+    const bk = await this.bkLockCaprinetRepository.getById(bkLockId);
+    if (!bk || bk?.ABORTADO) return;
     const deathExistences = await this.locksExistenceMappingRepository.getAll({
       lockTypeId,
       referenceCode: cancelMap.referenceCode,

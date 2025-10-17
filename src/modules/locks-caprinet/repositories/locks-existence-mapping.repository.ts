@@ -16,7 +16,7 @@ export class LocksExistenceMappingRepository {
 
   constructor(
     private readonly db: DatabaseService
-    ){}
+  ){}
 
   async getAll(params: IGetAllLockExistenceMapping): Promise<ILockExistenceMapping[]> {
     const paramsArray = this.getFinalParams(params, LockExistenceMappingConditions.LIST);
