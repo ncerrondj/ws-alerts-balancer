@@ -6,17 +6,19 @@ import { HttpServiceImpl } from './htpp-service.service';
 import { WsAlertsConnectionsService } from './ws-alerts-connections.service';
 import { Injectable } from '@nestjs/common';
 import { RegisterAlertResponseDto } from '../model/register-response.dto';
+import { PostNumerationRepository } from '../../../modules/locks-caprinet/repositories/postnumeration.repository';
 
 @Injectable()
 export class AlertNotificationService {
   constructor(
     private readonly wsAlertsConnectionsService: WsAlertsConnectionsService,
-    private readonly httpService: HttpServiceImpl
+    private readonly httpService: HttpServiceImpl,
+    private readonly postNumerationRepository: PostNumerationRepository
   ) {}
 
   async emitMessage(payload: EmitAlertMessagePayload, client?: Socket) {
     console.log('Emit message');
-    console.log({payload});
+    payload = await this.setDinamicVars(payload);
     const res = await this.httpService.post<any, RegisterAlertResponseDto>({
       path: 'notificacion-alerta/registrar',
       data: payload
@@ -52,5 +54,17 @@ export class AlertNotificationService {
         codigoTipoAlerta: options.codigoTipoAlerta
       })
     });
+  }
+  private async setDinamicVars(payload: EmitAlertMessagePayload) {
+    try {
+      if (payload.codigoTipoAlerta == 24) { //desbloqueo postnumeracion 
+        const postnumerationData = await this.postNumerationRepository.getPostNumerationDataFromLocks(payload.codigoUsuarioOrigen);
+        const ordenes = postnumerationData.map(item => item.ORDEN_COMPLETA).join(', ');
+        payload.data.ordenes = ordenes ? ordenes : '';
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    return payload;
   }
 }

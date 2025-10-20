@@ -8,10 +8,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
 
   constructor(
     private readonly configService: ConfigService, 
-  ) {}
-  private pool: Pool;
-
-  onModuleInit() {
+  ) {
     this.pool = createPool({
       host: this.configService.get<string>('DB_HOST'),
       port: this.configService.get<number>('DB_PORT'),
@@ -22,6 +19,11 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       connectionLimit: 10
     });
   }
+  private pool: Pool;
+
+  onModuleInit() {
+    
+  }
   async onModuleDestroy() {
     await this.pool.end();
   }
@@ -31,4 +33,5 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     const [rows] = await this.pool.query(`CALL ${spName}(${params.map(() => '?').join(',')})`, params);
     return rows;
   }
+  
 }

@@ -12,6 +12,7 @@ import { HttpServiceImpl } from './services/htpp-service.service';
 import { HttpModule } from '@nestjs/axios';
 import { WsAlertsConnectionsService } from './services/ws-alerts-connections.service';
 import { AlertNotificationController } from './controllers/alert-notification.controller';
+import { LocksCaprinetModule } from '../locks-caprinet/locks-caprinet.module';
 
 @Module({
   providers: [
@@ -29,6 +30,7 @@ import { AlertNotificationController } from './controllers/alert-notification.co
   imports: [
     forwardRef(() => MessageModule),
     HttpModule,
+    forwardRef(() => LocksCaprinetModule)
   ],
 })
 export class AlertsRequestManagementModule {}

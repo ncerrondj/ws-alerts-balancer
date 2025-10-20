@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { BkLocksCaprinetRepository } from './repositories/bk-locks-caprinet.repository';
 import { DatabaseModule } from '../../database/database.module';
 import { LocksCaprinetController } from './controllers/locks-caprinet.controller';
@@ -10,11 +10,12 @@ import { AlertsRequestManagementModule } from '../alerts-request-management/aler
 import { IncidenctsModule } from '../incidents/incidents.module';
 import { LocksPostponementManagerService } from './services/locks-postponement-manager.service';
 import { PendingRegularizationModule } from '../pending-regularization/pending-regularization.module';
+import { PostNumerationRepository } from './repositories/postnumeration.repository';
 
 @Module({
    controllers: [LocksCaprinetController],
-   providers: [BkLocksCaprinetRepository, LockCaprinetService, LocksExistenceMappingRepository, LocksCaprinetRepository, LocksPostponementManagerService],
-   exports: [BkLocksCaprinetRepository, LocksExistenceMappingRepository],
-   imports: [DatabaseModule, TaskModule, AlertsRequestManagementModule, IncidenctsModule, PendingRegularizationModule]
+   providers: [BkLocksCaprinetRepository, LockCaprinetService, LocksExistenceMappingRepository, LocksCaprinetRepository, LocksPostponementManagerService, PostNumerationRepository],
+   exports: [BkLocksCaprinetRepository, LocksExistenceMappingRepository, PostNumerationRepository],
+   imports: [DatabaseModule, TaskModule, forwardRef(()=>AlertsRequestManagementModule), IncidenctsModule, PendingRegularizationModule]
 })
 export class LocksCaprinetModule {}
