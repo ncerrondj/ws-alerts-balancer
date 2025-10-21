@@ -57,7 +57,7 @@ export class AlertNotificationService {
   }
   private async setDinamicVars(payload: EmitAlertMessagePayload) {
     try {
-      if (payload.codigoTipoAlerta == 24) { //desbloqueo postnumeracion 
+      if (payload.codigoTipoAlerta == 24 && payload.data?.codigoTipoBloqueo == 7124) { //desbloqueo postnumeracion 
         const postnumerationData = await this.postNumerationRepository.getPostNumerationDataFromLocks(payload.codigoUsuarioOrigen);
         const ordenes = postnumerationData.map(item => item.ORDEN_COMPLETA).join(', ');
         payload.data.ordenes = ordenes ? ordenes : '';
