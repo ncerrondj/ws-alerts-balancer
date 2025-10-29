@@ -250,7 +250,8 @@ export class LockCaprinetService implements OnModuleInit {
       reschedulingDatetime: data.reschedulingDatetime,
       referenceCode: data.referenceCode,
       referenceCode2: data.referenceCode2,
-      referenceCode3: data.referenceCode3
+      referenceCode3: data.referenceCode3,
+      userId: data.userId,
     });
     await this.reprogramByBkCodes(newBkCodesForReprogramations);
     abortedBkCodes.split(',').forEach(bkCode => {
