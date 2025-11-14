@@ -6,6 +6,7 @@ export enum MESSAGE_EVENTS {
   MESSAGE = 'message',
   SIMPLE_CUSTOM_MESSAGE_BY_PERFIL = 'simple-custom-message-perfil-',
   SIMPLE_CUSTOM_MESSAGE = 'simple-custom-message',
+  SIMPLE_CUSTOM_MESSAGE_TO_USER = 'simple-custom-message-',
   CAPRINET_RELOAD = 'caprinet-reload',
   CAPRINET_RELOAD_BY_PERFIL = 'caprinet-reload-perfil-',
   MESSAGE_BY_PERFIL = 'message-perfil-',

@@ -48,17 +48,32 @@ export class MessageService {
   } );
   }
   sendSimpleMessage(messageDto: MessageDto, perfilId?: number) {
-    const connections: Socket[] = this.getConnectionsByOptionalPerfilId(perfilId);
-    const {message, title, userIdsToExcludeOfNotification = []} = messageDto;
-    const event = perfilId ? MESSAGE_EVENTS.SIMPLE_CUSTOM_MESSAGE_BY_PERFIL + perfilId : MESSAGE_EVENTS.SIMPLE_CUSTOM_MESSAGE;
-    connections.forEach((client) => {
-      const userId = this.wsConnectionsService.getUserId(client);
-      if (userIdsToExcludeOfNotification.length && userIdsToExcludeOfNotification.includes(userId)) {
-        return;
-      }
-      
-      client.emit(event, {message, title});
-    });
+    const {message, title, userIdsToExcludeOfNotification = [], targetUserIds, height, width} = messageDto;
+    
+    let event: string;
+    if (messageDto.targetType === 'P') {
+      event = perfilId ? MESSAGE_EVENTS.SIMPLE_CUSTOM_MESSAGE_BY_PERFIL + perfilId : MESSAGE_EVENTS.SIMPLE_CUSTOM_MESSAGE;
+      const connections: Socket[] = this.getConnectionsByOptionalPerfilId(perfilId);
+      connections.forEach((client) => {
+        const userId = this.wsConnectionsService.getUserId(client);
+        if (userIdsToExcludeOfNotification.length && userIdsToExcludeOfNotification.includes(userId)) {
+          return;
+        }
+        
+        client.emit(event, {message, title});
+      });
+    } else {
+      targetUserIds?.forEach(userId => {
+        this.wsConnectionsService.getConnections(userId)?.forEach(c => {
+          event = MESSAGE_EVENTS.SIMPLE_CUSTOM_MESSAGE_TO_USER.concat(userId);
+          if (userIdsToExcludeOfNotification.length && userIdsToExcludeOfNotification.includes(userId)) {
+            return;
+          }
+          c.emit(event, {message, title, height, width});
+        })
+      });
+    }
+    
     return 'Mensaje enviado';
   }
   sendReloadCaprinetMessage(messageDto: MessageDto, perfilId?: number) {
