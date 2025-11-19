@@ -62,6 +62,11 @@ export class AlertNotificationService {
         const ordenes = postnumerationData.map(item => item.ORDEN_COMPLETA).join(', ');
         payload.data.ordenes = ordenes ? ordenes : 'Vacío';
       }
+      if (payload.codigoTipoAlerta == 24 && payload.data?.codigoTipoBloqueo == 7159) { //desbloqueo regularizacion
+        const postnumerationData = await this.postNumerationRepository.getRegularizationDataFromLocks(payload.codigoUsuarioOrigen);
+        const ordenes = postnumerationData.map(item => item.ORDEN_COMPLETA).join(', ');
+        payload.data.ordenes = ordenes ? ordenes : 'Vacío';
+      }
     } catch (error) {
       console.log(error);
     }

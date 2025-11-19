@@ -19,6 +19,13 @@ export class PostNumerationRepository {
         const rows = await this.db.callProcedure(PostNumeracionSp.OpePostNumeration, paramsArray);
         return rows[0]?.map(DbUtils.normalizeRow) ?? [];
     }
+    async getRegularizationDataFromLocks(userId: number): Promise<IPostnumerationData[]> {
+        const paramsArray = this.getFinalParams({
+            userId
+        }, OpePostNumerationConditions.GET_ORDERS_FROM_REGULARIZATION_LOCKS);
+        const rows = await this.db.callProcedure(PostNumeracionSp.OpePostNumeration, paramsArray);
+        return rows[0]?.map(DbUtils.normalizeRow) ?? [];
+    }
     private getFinalParams(params: Partial<IOpePostNumerationSpParams>, condition: OpePostNumerationConditions) {
         const final: IOpePostNumerationSpParams = {
         ...PostNumerationSpDefaults.opePostNumeration,
