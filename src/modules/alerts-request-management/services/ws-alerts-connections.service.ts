@@ -72,6 +72,12 @@ export class WsAlertsConnectionsService {
   getConnections(userId: string): Socket[] {
     return this.connections[userId]?.connections || [];
   }
+  sendMessageToUser(userId: string, message: string, data?: any) {
+    this.getConnections(userId).forEach(c => {
+      console.log({c: c.id});
+      c.emit(message, data);
+    });
+  }
   cleanEmptyConnections(userId: string) {
     if (!this.connections[userId]) {
       return;

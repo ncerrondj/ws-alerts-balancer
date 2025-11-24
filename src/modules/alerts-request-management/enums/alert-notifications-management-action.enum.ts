@@ -7,5 +7,7 @@ export enum ALERT_NOTIFICATIONS_MANAGEMENT_EVENT {
    EMIT_ALERT_TO_USER = 'alert-notification-',
    REMOVE_ALERT_TO_USER = 'remove-alert-',
    MARK_ALERT_AS_READ_FOR_USER = 'mark-notification-as-read-',
-   EMISSION_RESPONSE = 'respuesta-emision'
+   EMISSION_RESPONSE = 'respuesta-emision',
+   GENERAL_SOUND_CHANGE_TO_USER = 'set-general-sound-',
+   CONFIG_CHANGE_TO_USER = 'config-change-'
 }

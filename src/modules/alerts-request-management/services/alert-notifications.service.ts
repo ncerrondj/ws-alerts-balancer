@@ -7,17 +7,20 @@ import { WsAlertsConnectionsService } from './ws-alerts-connections.service';
 import { Injectable } from '@nestjs/common';
 import { RegisterAlertResponseDto } from '../model/register-response.dto';
 import { PostNumerationRepository } from '../../../modules/locks-caprinet/repositories/postnumeration.repository';
+import { NotificationGeneralSoundDto } from '../model/notification-general-configuration.dto';
+import { AlertNotificationConfigRepository } from '../repositories/alert-notification-config.repository';
 
 @Injectable()
 export class AlertNotificationService {
+  
   constructor(
     private readonly wsAlertsConnectionsService: WsAlertsConnectionsService,
     private readonly httpService: HttpServiceImpl,
-    private readonly postNumerationRepository: PostNumerationRepository
+    private readonly postNumerationRepository: PostNumerationRepository,
+    private readonly alertNotificationConfigRepository: AlertNotificationConfigRepository
   ) {}
 
   async emitMessage(payload: EmitAlertMessagePayload, client?: Socket) {
-    console.log('Emit message');
     payload = await this.setDinamicVars(payload);
     const res = await this.httpService.post<any, RegisterAlertResponseDto>({
       path: 'notificacion-alerta/registrar',
@@ -26,7 +29,6 @@ export class AlertNotificationService {
     payload.codigoAlerta = res.codigoAlerta;
     res.codigosUsuariosObjetivos?.forEach((userId: string) => {
       const connections = this.wsAlertsConnectionsService.getConnections(userId.toString());
-      // console.log(`Mandando a ${userId}, con ${connections.length} conexiones`);
       connections?.forEach(c => {
         c.emit(ALERT_NOTIFICATIONS_MANAGEMENT_EVENT.EMIT_ALERT_TO_USER.concat(userId.toString()), payload);
       });
@@ -55,6 +57,19 @@ export class AlertNotificationService {
       })
     });
   }
+  async setGeneralSound(data: NotificationGeneralSoundDto) {
+    const {
+      userId,
+      generalSound
+    } = data;
+    await this.alertNotificationConfigRepository.updateGeneralConfig({
+      userId: +userId,
+      generalSound: generalSound
+    });
+    this.wsAlertsConnectionsService.sendMessageToUser(userId, ALERT_NOTIFICATIONS_MANAGEMENT_EVENT.GENERAL_SOUND_CHANGE_TO_USER.concat(userId), {
+      generalSound
+    });  
+  }
   private async setDinamicVars(payload: EmitAlertMessagePayload) {
     try {
       if (payload.codigoTipoAlerta == 24 && payload.data?.codigoTipoBloqueo == 7124) { //desbloqueo postnumeracion 
@@ -71,5 +86,8 @@ export class AlertNotificationService {
       console.log(error);
     }
     return payload;
+  }
+  notifyConfigChange(userId: string) {
+    this.wsAlertsConnectionsService.sendMessageToUser(userId, ALERT_NOTIFICATIONS_MANAGEMENT_EVENT.CONFIG_CHANGE_TO_USER.concat(userId));
   }
 }

@@ -13,6 +13,8 @@ import { HttpModule } from '@nestjs/axios';
 import { WsAlertsConnectionsService } from './services/ws-alerts-connections.service';
 import { AlertNotificationController } from './controllers/alert-notification.controller';
 import { LocksCaprinetModule } from '../locks-caprinet/locks-caprinet.module';
+import { AlertNotificationConfigRepository } from './repositories/alert-notification-config.repository';
+import { DatabaseModule } from '../../database/database.module';
 
 @Module({
   providers: [
@@ -23,14 +25,16 @@ import { LocksCaprinetModule } from '../locks-caprinet/locks-caprinet.module';
     WsAlertsConnectionsService,
     AlertsBodyCacheService,
     AlertNotificationGateway,
-    HttpServiceImpl
+    HttpServiceImpl,
+    AlertNotificationConfigRepository
   ],
   controllers: [AlertsBodyCacheController, LogsController, AlertNotificationController],
   exports: [WsConnectionsService, WsAlertsConnectionsService],
   imports: [
     forwardRef(() => MessageModule),
     HttpModule,
-    forwardRef(() => LocksCaprinetModule)
+    forwardRef(() => LocksCaprinetModule),
+    DatabaseModule
   ],
 })
 export class AlertsRequestManagementModule {}
