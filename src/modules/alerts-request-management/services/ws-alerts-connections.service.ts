@@ -74,7 +74,6 @@ export class WsAlertsConnectionsService {
   }
   sendMessageToUser(userId: string, message: string, data?: any) {
     this.getConnections(userId).forEach(c => {
-      console.log({c: c.id});
       c.emit(message, data);
     });
   }

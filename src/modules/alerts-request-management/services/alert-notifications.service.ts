@@ -68,7 +68,10 @@ export class AlertNotificationService {
     });
     this.wsAlertsConnectionsService.sendMessageToUser(userId, ALERT_NOTIFICATIONS_MANAGEMENT_EVENT.GENERAL_SOUND_CHANGE_TO_USER.concat(userId), {
       generalSound
-    });  
+    });
+    return {
+      ok: true
+    };
   }
   private async setDinamicVars(payload: EmitAlertMessagePayload) {
     try {
@@ -89,5 +92,8 @@ export class AlertNotificationService {
   }
   notifyConfigChange(userId: string) {
     this.wsAlertsConnectionsService.sendMessageToUser(userId, ALERT_NOTIFICATIONS_MANAGEMENT_EVENT.CONFIG_CHANGE_TO_USER.concat(userId));
+    return {
+      ok: true
+    };
   }
 }
