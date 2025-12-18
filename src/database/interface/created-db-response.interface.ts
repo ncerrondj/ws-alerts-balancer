@@ -1,0 +1,1 @@
+export type ICreatedDbResponse = Promise<{id: number}>;

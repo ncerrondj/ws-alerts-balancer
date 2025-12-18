@@ -12,6 +12,7 @@ import { LocksCaprinetModule } from './modules/locks-caprinet/locks-caprinet.mod
 import { TaskModule } from './modules/tasks/task.module';
 import { IncidenctsModule } from './modules/incidents/incidents.module';
 import { PendingRegularizationModule } from './modules/pending-regularization/pending-regularization.module';
+import { PopUpsModule } from './modules/pop-ups/pop-ups.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { PendingRegularizationModule } from './modules/pending-regularization/pe
     LocksCaprinetModule,
     TaskModule,
     IncidenctsModule,
-    PendingRegularizationModule
+    PendingRegularizationModule,
+    PopUpsModule
   ],
   controllers: [AppController],
   providers: [AppService],

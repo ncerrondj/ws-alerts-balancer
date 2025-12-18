@@ -17,6 +17,7 @@ import { SetCachedDataPayload } from '../model/set-cached-data.payload';
 import { AlertsBodyCacheService } from '../services/alerts-body-cache.service';
 import { MessageService } from '../../../messages/services/message.service';
 import { MESSAGE_ACTIONS } from '../../../messages/enum/message-action.enum';
+import { CloseMessageDto } from '../../../messages/model/close-message.dto';
 @WebSocketGateway({
   namespace: 'alerts-request-management',
   cors: { origin: '*' },
@@ -100,7 +101,7 @@ export class AlertsRequestManagementGateway implements OnGatewayDisconnect {
   @SubscribeMessage(MESSAGE_ACTIONS.SIMPLE_CUSTOM_MESSAGE_CLOSED_BY_USER)
   handleSimpleCustomMessageClosedByUser(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: SuscribePayload
+    @MessageBody() data: CloseMessageDto
   ) {
     this.messageService.handleSimpleMessageClosedByUser(client, data);
   }

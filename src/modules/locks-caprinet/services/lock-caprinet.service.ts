@@ -33,7 +33,6 @@ export class LockCaprinetService implements OnModuleInit {
       created: false,
       aborted: false,
     });
-    console.log({bks});
     bks.forEach((bk) => {
       this.programLock(
         {

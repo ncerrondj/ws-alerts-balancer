@@ -11,6 +11,7 @@ export class DbUtils {
   }
   //convertidor de datos al obtener data del sp
   static normalizeRow(row: any) {
+    if(!row) return null;
     const result: any = {};
     for (const [key, value] of Object.entries(row)) {
       if (Buffer.isBuffer(value) && value.length === 1) {
@@ -48,5 +49,44 @@ export class DbUtils {
     const date = new Date(val.replace(' ', 'T').concat('-05:00'));
     return date.toJSON();
   }
+  
+  /**
+   * '31/12/2025 => '2025-12-31'
+   */
+  static toMysqlDate(date: string) {
+      if (!date) return null;
 
+    const [day, month, year] = date.split('/');
+
+    if (!day || !month || !year) return '';
+
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
+  /**
+   * '2025-12-31' => '31/12/2025'
+   */
+  static toNormalDate(date: string){
+    if (!date) return null;
+
+    const [year, month, day] = date.split('-');
+
+    if (!year || !month || !day) return '';
+
+    return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+  }
+
+  /**
+   * '13:40:00' => '13:40'
+   */
+  static toBasicHour(hour: string) {
+    if (!hour) return null;
+
+    const parts = hour.split(':');
+
+    if (parts.length < 2) return null;
+
+    const [h, m] = parts;
+
+    return `${h.padStart(2, '0')}:${m.padStart(2, '0')}`;
+  }
 }

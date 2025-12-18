@@ -5,11 +5,14 @@ import { SuscribePayload } from '../../modules/alerts-request-management/model/s
 import { MESSAGE_EVENTS } from '../enum/message-action.enum';
 import { MessageDto } from '../model/message.dto';
 import { IngresoSolicitudesPendienteUsersDto } from '../model/ingreso-solicitudes-pendientes-users.dto';
+import { PopUpRepository } from '../../modules/pop-ups/repositories/pop-up.repository';
+import { CloseMessageDto } from '../model/close-message.dto';
 
 @Injectable()
 export class MessageService {
   constructor(
-    private readonly wsConnectionsService: WsConnectionsService
+    private readonly wsConnectionsService: WsConnectionsService,
+    private readonly popUpRepository: PopUpRepository
   ) {}
   handlePendingRequestsWereAddedByUser(
     client: Socket,
@@ -37,15 +40,37 @@ export class MessageService {
     });
     return 'Mensaje enviado a todos los clientes indicados';
   }
-  handleSimpleMessageClosedByUser(
+  async handleSimpleMessageClosedByUser(
     client: Socket,
-    data: SuscribePayload
+    data: CloseMessageDto
   ) {
+    const {
+      userId,
+    } = data;
     this.wsConnectionsService.addConnectionIfNecessary(data, client);
-    this.wsConnectionsService.getConnections(data.userId).forEach((c) => {
-      c.emit(MESSAGE_EVENTS.CLOSE_SIMPLE_CUSTOM_MESSAGE_BY_USER + data.userId
+    await this.popUpRepository.markAsRead(data.popUpId, +userId);
+    const userConnections = this.wsConnectionsService.getConnections(userId);
+    userConnections.forEach((c) => {
+      c.emit(MESSAGE_EVENTS.CLOSE_SIMPLE_CUSTOM_MESSAGE_BY_USER + userId
       );
-  } );
+    });
+    const popUps =  await this.popUpRepository.getAll({
+      targetUserId: +userId
+    });
+    if (!popUps.length) return;
+    const orderedPopUps = popUps.sort((a, b) => a.FECHA_CREACION.localeCompare(b.FECHA_CREACION));
+    const first = orderedPopUps[0];
+    setTimeout(() => {
+      userConnections.forEach(c => {
+        c.emit(MESSAGE_EVENTS.SIMPLE_CUSTOM_MESSAGE_TO_USER.concat(userId), {
+          popUpId: first.CODIGO, 
+          title: first.TITULO,
+          message: first.MENSAJE,
+          width: +first.ANCHO_MODAL,
+          height: +first.ALTO_MODAL
+        })
+      });
+    }, 1500);
   }
   sendSimpleMessage(messageDto: MessageDto, perfilId?: number) {
     const {message, title, userIdsToExcludeOfNotification = [], targetUserIds, height, width} = messageDto;

@@ -15,6 +15,7 @@ import { AlertNotificationController } from './controllers/alert-notification.co
 import { LocksCaprinetModule } from '../locks-caprinet/locks-caprinet.module';
 import { AlertNotificationConfigRepository } from './repositories/alert-notification-config.repository';
 import { DatabaseModule } from '../../database/database.module';
+import { PopUpsModule } from '../pop-ups/pop-ups.module';
 
 @Module({
   providers: [
@@ -34,6 +35,7 @@ import { DatabaseModule } from '../../database/database.module';
     forwardRef(() => MessageModule),
     HttpModule,
     forwardRef(() => LocksCaprinetModule),
+    PopUpsModule,
     DatabaseModule
   ],
 })
