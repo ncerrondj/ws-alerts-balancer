@@ -101,7 +101,7 @@ export class AlertsRequestManagementGateway implements OnGatewayDisconnect {
   @SubscribeMessage(MESSAGE_ACTIONS.SIMPLE_CUSTOM_MESSAGE_CLOSED_BY_USER)
   handleSimpleCustomMessageClosedByUser(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: CloseMessageDto 
+    @MessageBody() data: CloseMessageDto
   ) {
     this.messageService.handleSimpleMessageClosedByUser(client, data);
   }
