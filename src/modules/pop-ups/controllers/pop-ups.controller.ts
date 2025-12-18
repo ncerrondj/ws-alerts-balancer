@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post, Query } from "@nestjs/common";
 import { AcePopUpDto } from "../dtos/ace-pop-up.dto";
 import { PopUpsService } from "../services/pop-ups.service";
 import { IGetAllPopUpsParams } from "../interfaces/get-all-pop-ups-params";
+import { AcePopUpExtDto } from "../dtos/ace-pop-up-ext.dto";
 
 @Controller('pop-up')
 export class PopUpsController {
@@ -10,12 +11,19 @@ export class PopUpsController {
         private readonly popUpService: PopUpsService
     ){}
 
+    // @Post('ace')
+    // async acePopUp(
+    //     @Body() dto: AcePopUpDto
+    // ) {
+    //     return await this.popUpService.acePopUp(dto);
+    // }
     @Post('ace')
     async acePopUp(
-        @Body() dto: AcePopUpDto
+        @Body() dto: AcePopUpExtDto
     ) {
-        return await this.popUpService.acePopUp(dto);
+        return await this.popUpService.throwAcePopUpFromExternarl(dto);
     }
+
 
     @Get('ace')
     async getAcePopUps(

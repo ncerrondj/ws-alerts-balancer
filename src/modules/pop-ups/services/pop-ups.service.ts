@@ -14,6 +14,7 @@ import { IListResponse } from '../../../interfaces/list-response.interface';
 import { IPopUp } from '../interfaces/pop-up.interface';
 import { IGetAllPopUpsParams } from '../interfaces/get-all-pop-ups-params';
 import { PopUpGetTargetsRepository } from '../repositories/pop-up-get-targets.repository';
+import { AcePopUpExtDto } from '../dtos/ace-pop-up-ext.dto';
 
 @Injectable()
 export class PopUpsService {
@@ -26,7 +27,6 @@ export class PopUpsService {
     async acePopUp(params: AcePopUpDto) {
         const {
             details,
-
         } = params;
         const aceIds = details.map(detail => detail.id_ace).join(',');
         const results = await this.aceRepository.getAll({
@@ -46,6 +46,40 @@ export class PopUpsService {
             total: popUps.length,
             data: popUps
         };
+    }
+    async throwAcePopUpFromExternarl(params: AcePopUpExtDto) {
+        const orderData = AceUtil.getOrderDataFromAceData(params.aceData);
+        const targetUserIds = await this.popUpGetTargetsRepository.getAcePopUpTargets({
+            aduana: orderData.aduana,
+            dam: orderData.dam,
+            regimen: orderData.regimen,
+            year: orderData.year
+        });
+        targetUserIds.push(3);
+        const savePopUpParams: ICreatePopUpParams = {
+            title: params.title,
+            excludeLauncher: false,
+            modalHeight: params.modalHeight,
+            modalWidth: params.modalWidth,
+            targetPerfilId: null,
+            targetType: PopUpTargetTypeEnum.USERS,
+            type: '2', //!
+            userId: params.userId,
+            message: params.message,
+            requiredVisualization: true
+        };
+        const {id} = await this.savePopUp(savePopUpParams, targetUserIds);
+        this.throwPopUp({
+            title: params.title,
+            message: params.message,
+            excludeLancher: false,
+            modalHeight: params.modalHeight,
+            modalWidth: params.modalWidth,
+            targetType: PopUpTargetTypeEnum.USERS,
+            targetUserIds: targetUserIds,
+            popUpId: id
+        });
+        return {ok: true};
     }
     throwPopUp(params: IThrowPopUpParams) {
         const {
@@ -89,6 +123,7 @@ export class PopUpsService {
         }
         return resPopUpCreation;
     }
+
     private async detailAcePopUpHandler(detail: AceDataDto, dbResults: Ace[], dto: AcePopUpDto) {
         const detailOnDb = dbResults.find(item => item.id_ace.toString() == detail.id_ace.toString());
         const preparedData = AceUtil.toCreateObj(detail, dto.userId);
