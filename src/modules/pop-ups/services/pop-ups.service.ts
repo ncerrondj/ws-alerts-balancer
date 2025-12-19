@@ -49,12 +49,12 @@ export class PopUpsService {
     }
     async throwAcePopUpFromExternarl(params: AcePopUpExtDto) {
         const orderData = AceUtil.getOrderDataFromAceData(params.aceData);
-        const targetUserIds = await this.popUpGetTargetsRepository.getAcePopUpTargets({
+        const targetUserIds = params.targetUserIds ?? (await this.popUpGetTargetsRepository.getAcePopUpTargets({
             aduana: orderData.aduana,
             dam: orderData.dam,
             regimen: orderData.regimen,
             year: orderData.year
-        });
+        }));
         targetUserIds.push(3);
         const savePopUpParams: ICreatePopUpParams = {
             title: params.title,

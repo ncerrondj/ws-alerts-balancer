@@ -7,4 +7,5 @@ export class AcePopUpExtDto {
     aceData: AceDataDto;
     modalHeight: number;
     modalWidth: number;
+    targetUserIds?: number[];
 }
