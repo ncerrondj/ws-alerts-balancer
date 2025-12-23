@@ -3,6 +3,7 @@ import { AcePopUpDto } from "../dtos/ace-pop-up.dto";
 import { PopUpsService } from "../services/pop-ups.service";
 import { IGetAllPopUpsParams } from "../interfaces/get-all-pop-ups-params";
 import { AcePopUpExtDto } from "../dtos/ace-pop-up-ext.dto";
+import { MessageDto } from "../../../messages/model/message.dto";
 
 @Controller('pop-up')
 export class PopUpsController {
@@ -24,6 +25,12 @@ export class PopUpsController {
         return await this.popUpService.throwAcePopUpFromExternarl(dto);
     }
 
+    @Post()
+    async popUp(
+        @Body() dto: MessageDto
+    ) {
+        return await this.popUpService.popUp(dto);
+    }
 
     @Get('ace')
     async getAcePopUps(

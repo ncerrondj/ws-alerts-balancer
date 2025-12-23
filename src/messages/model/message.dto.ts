@@ -1,9 +1,10 @@
 export class MessageDto {
   message: string = 'Mensaje vacío';
   title: string = 'Título vacío';
-  userIdsToExcludeOfNotification?: string[] = [];
-  targetUserIds: string[] = [];
+  userIdsToExcludeOfNotification?: number[] = [];
+  targetUserIds: number[] = [];
   targetType: 'U' | 'P' = 'P';
-  width?: string;
-  height?: string;
+  width?: number;
+  height?: number;
+  userId: number;
 }

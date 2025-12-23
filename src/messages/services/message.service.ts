@@ -81,7 +81,7 @@ export class MessageService {
       const connections: Socket[] = this.getConnectionsByOptionalPerfilId(perfilId);
       connections.forEach((client) => {
         const userId = this.wsConnectionsService.getUserId(client);
-        if (userIdsToExcludeOfNotification.length && userIdsToExcludeOfNotification.includes(userId)) {
+        if (userIdsToExcludeOfNotification.length && userIdsToExcludeOfNotification.includes(+userId)) {
           return;
         }
         
@@ -89,8 +89,8 @@ export class MessageService {
       });
     } else {
       targetUserIds?.forEach(userId => {
-        this.wsConnectionsService.getConnections(userId)?.forEach(c => {
-          event = MESSAGE_EVENTS.SIMPLE_CUSTOM_MESSAGE_TO_USER.concat(userId);
+        this.wsConnectionsService.getConnections(userId.toString())?.forEach(c => {
+          event = MESSAGE_EVENTS.SIMPLE_CUSTOM_MESSAGE_TO_USER.concat(userId.toString());
           if (userIdsToExcludeOfNotification.length && userIdsToExcludeOfNotification.includes(userId)) {
             return;
           }
@@ -107,7 +107,7 @@ export class MessageService {
     const event = perfilId ? MESSAGE_EVENTS.CAPRINET_RELOAD_BY_PERFIL + perfilId : MESSAGE_EVENTS.CAPRINET_RELOAD;
     connections.forEach((client) => {
       const userId = this.wsConnectionsService.getUserId(client);
-      if (userIdsToExcludeOfNotification.length && userIdsToExcludeOfNotification.includes(userId)) {
+      if (userIdsToExcludeOfNotification.length && userIdsToExcludeOfNotification.includes(+userId)) {
         return;
       }
       client.emit(event, {message, title});

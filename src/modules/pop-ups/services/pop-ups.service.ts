@@ -15,6 +15,7 @@ import { IPopUp } from '../interfaces/pop-up.interface';
 import { IGetAllPopUpsParams } from '../interfaces/get-all-pop-ups-params';
 import { PopUpGetTargetsRepository } from '../repositories/pop-up-get-targets.repository';
 import { AcePopUpExtDto } from '../dtos/ace-pop-up-ext.dto';
+import { MessageDto } from '../../../messages/model/message.dto';
 
 @Injectable()
 export class PopUpsService {
@@ -112,7 +113,38 @@ export class PopUpsService {
             });
         }
     }
-    async savePopUp(params: ICreatePopUpParams, targets: number[]) {
+    async popUp(params: MessageDto) {
+        let targetUserIds = params.targetUserIds ?? [];
+        const userIdsToExcludeOfNotification = params.userIdsToExcludeOfNotification ?? [];
+        targetUserIds = targetUserIds.filter(id => userIdsToExcludeOfNotification.every(idExclude => idExclude != id));
+
+        const {id} = await this.savePopUp({
+            excludeLauncher: false,
+            message: params.message,
+            modalHeight: params.height,
+            modalWidth: params.width,
+            requiredVisualization: true,
+            targetPerfilId: null,
+            targetType: 'U',
+            title: params.title,
+            type: '2',
+            userId: params.userId
+        }, targetUserIds);
+        this.throwPopUp({
+            title: params.title,
+            message: params.message,
+            excludeLancher: false,
+            modalHeight: params.height,
+            modalWidth: params.width,
+            targetType: PopUpTargetTypeEnum.USERS,
+            targetUserIds: targetUserIds,
+            popUpId: id
+        });
+        return {
+            ok: true
+        };
+    }
+    private async savePopUp(params: ICreatePopUpParams, targets: number[]) {
         const resPopUpCreation = await this.popUpRepository.create(params);
         for (const target of targets) {
             await this.popUpRepository.addPopUpTarget({
