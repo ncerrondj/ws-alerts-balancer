@@ -16,6 +16,10 @@ import { IGetAllPopUpsParams } from '../interfaces/get-all-pop-ups-params';
 import { PopUpGetTargetsRepository } from '../repositories/pop-up-get-targets.repository';
 import { AcePopUpExtDto } from '../dtos/ace-pop-up-ext.dto';
 import { MessageDto } from '../../../messages/model/message.dto';
+import { CyclicalPopUpDto } from '../../../messages/model/cyclical-pop-up.dto';
+import { CyclicalPopUpService } from './cyclical-pop-up.service';
+import { PopUpMappingRepository } from '../repositories/pop-up-mapping.repository';
+import { IKillPopUpReferencesMap } from '../interfaces/kill-pop-up-references-map.interface';
 
 @Injectable()
 export class PopUpsService {
@@ -23,7 +27,9 @@ export class PopUpsService {
         private readonly aceRepository: AceRepository,
         private readonly wsConnectionsService: WsConnectionsService,
         private readonly popUpRepository: PopUpRepository,
-        private readonly popUpGetTargetsRepository: PopUpGetTargetsRepository
+        private readonly popUpGetTargetsRepository: PopUpGetTargetsRepository,
+        private readonly cyclicalPopUpService: CyclicalPopUpService,
+        private readonly popUpMappingRepository: PopUpMappingRepository
     ) {}
     async acePopUp(params: AcePopUpDto) {
         const {
@@ -143,6 +149,82 @@ export class PopUpsService {
         return {
             ok: true
         };
+    }
+
+    async cyclicalPopUp(params: CyclicalPopUpDto) {
+        const isValid = await this.validateMapping(params);
+        if (!isValid) {
+            return {
+                ok: false,
+                msg: 'El pop up ya fue creado con anterioridad'
+            };
+        }
+        const targetUserIds = params.targetUserIds ?? [];
+        const {id} = await this.savePopUp({
+            excludeLauncher: false,
+            message: params.message,
+            modalHeight: params.height,
+            modalWidth: params.width,
+            requiredVisualization: true,
+            targetPerfilId: null,
+            targetType: 'U',
+            title: params.title,
+            type: '4',
+            userId: params.userId,
+            subTypeId: params.subTypeId
+        }, targetUserIds);
+        if (params.validateByMapping) {
+            const {id: idMapeo} = await this.popUpMappingRepository.create({
+                chrNotificationType: '4',
+                notificationId: id,
+                notificationSubTypeId: params.subTypeId,
+                referenceCode: params.referenceCode,
+                referenceCode2: params.referenceCode2,
+                referenceCode3: params.referenceCode3
+            });
+        }
+        await this.cyclicalPopUpService.initCycle({
+            cycleId: null,
+            cyclicalPopUpDto: params,
+            popUpId: id
+        });
+        return {ok: true, msg: 'ok'};
+    }
+    async killReferenceMap(params: IKillPopUpReferencesMap) {
+        const existencesMapping = await this.popUpMappingRepository.killAndGet({
+            chrNotificationType: params.chrNotificationType,
+            notificationSubTypeId: params.notificationSubTypeId,
+            referenceCode: params.referenceCode,
+            referenceCode2: params.referenceCode2,
+            referenceCode3: params.referenceCode3,
+            finisherUserId: params.finisherUserId
+        });
+        if (!existencesMapping.length) {
+            await this.popUpMappingRepository.create({
+                chrNotificationType: params.chrNotificationType,
+                notificationSubTypeId: params.notificationSubTypeId,
+                referenceCode: params.referenceCode,
+                referenceCode2: params.referenceCode2,
+                referenceCode3: params.referenceCode3,
+                notificationId: null
+            });
+        }
+        return {ok: true};
+    }
+    private async validateMapping(params: CyclicalPopUpDto) {
+        if (!params.validateByMapping) return true;
+        const deathExistences = await this.popUpMappingRepository.getAll({
+            chrNotificationType: '4', // ciclica, de momento solo funcionaria para este el validador
+            notificationSubTypeId: params.subTypeId,
+            referenceCode: params.referenceCode,
+            referenceCode2: params.referenceCode2,
+            referenceCode3: params.referenceCode3,
+            //deathMapping: true
+        });
+        if (deathExistences.length) {
+            return false;
+        };
+        return true;
     }
     private async savePopUp(params: ICreatePopUpParams, targets: number[]) {
         const resPopUpCreation = await this.popUpRepository.create(params);

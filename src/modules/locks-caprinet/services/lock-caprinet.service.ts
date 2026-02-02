@@ -29,6 +29,7 @@ export class LockCaprinetService implements OnModuleInit {
     private readonly locksPostponementManagerService: LocksPostponementManagerService
   ) {}
   async onModuleInit() {
+    return;
     const bks = await this.bkLockCaprinetRepository.getAll({
       created: false,
       aborted: false,

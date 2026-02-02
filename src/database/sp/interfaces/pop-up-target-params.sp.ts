@@ -5,4 +5,5 @@ export interface IPopUpTargetSpParams {
     popUpId: number;
     userCreationId: number;
     targetUserId: number;
+    originCycle?: number;
 }

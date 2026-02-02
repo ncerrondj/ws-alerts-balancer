@@ -67,7 +67,8 @@ export class PopUpRepository {
             final.modalWidth,
             final.modalHeight,
             final.targetUserId,
-            final.requiredVisualization
+            final.requiredVisualization,
+            final.subTypeId
         ];
         return paramsArray;
     }
@@ -80,7 +81,8 @@ export class PopUpRepository {
             condition,
             final.popUpId,
             final.userCreationId,
-            final.targetUserId
+            final.targetUserId,
+            final.originCycle
         ];
         return paramsArray;
     }

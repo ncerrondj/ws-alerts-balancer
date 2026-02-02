@@ -16,4 +16,5 @@ export interface IPopUpSpParams {
     modalHeight: number;
     targetUserId: number;
     requiredVisualization: boolean;
+    subTypeId?: number;
 }

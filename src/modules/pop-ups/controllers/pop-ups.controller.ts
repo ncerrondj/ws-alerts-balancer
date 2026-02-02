@@ -4,6 +4,7 @@ import { PopUpsService } from "../services/pop-ups.service";
 import { IGetAllPopUpsParams } from "../interfaces/get-all-pop-ups-params";
 import { AcePopUpExtDto } from "../dtos/ace-pop-up-ext.dto";
 import { MessageDto } from "../../../messages/model/message.dto";
+import { CyclicalPopUpDto } from "../../../messages/model/cyclical-pop-up.dto";
 
 @Controller('pop-up')
 export class PopUpsController {
@@ -30,6 +31,13 @@ export class PopUpsController {
         @Body() dto: MessageDto
     ) {
         return await this.popUpService.popUp(dto);
+    }
+
+    @Post('cyclical')
+    async ciclicalPopUp(
+        @Body() dto: CyclicalPopUpDto
+    ) {
+        return await this.popUpService.cyclicalPopUp(dto);
     }
 
     @Get('ace')

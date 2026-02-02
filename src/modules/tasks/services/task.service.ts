@@ -11,6 +11,13 @@ export class TaskService {
       this.logger.warn(`Se intento la tarea con id ${id} pero ya existía`);
       return;
     }
+    const now = Date.now();
+    if (date.getTime() <= now) {
+      this.logger.warn(`Tarea con id '${id}' tiene fecha/hora menor al tiempo actual (${date.toLocaleString()}), ejecutando ahora`);
+      // Ejecuta inmediatamente
+      func();
+      return;
+    }
     const job = schedule.scheduleJob(date, async () => {
       await func()
       this.jobs.delete(id);

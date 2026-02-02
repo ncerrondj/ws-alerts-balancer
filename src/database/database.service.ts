@@ -2,6 +2,8 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createPool, Pool } from 'mysql2/promise';
 import { DbUtils } from './utils/db.utils';
+import * as mysql from 'mysql2';
+
 
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
@@ -30,7 +32,11 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
 
   async callProcedure(spName: string, params: any[] = []): Promise<any> {
     params = params?.map(DbUtils.spParamBooleanHandler);
-    const [rows] = await this.pool.query(`CALL ${spName}(${params.map(() => '?').join(',')})`, params);
+    const sql = `CALL ${spName}(${params.map(() => '?').join(',')})`;
+    const finalSql = mysql.format(sql, params);
+    //console.log('Ejecutando: ', finalSql);
+
+    const [rows] = await this.pool.query(sql, params);
     return rows;
   }
   
