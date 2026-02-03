@@ -16,6 +16,7 @@ import { LocksCaprinetModule } from '../locks-caprinet/locks-caprinet.module';
 import { AlertNotificationConfigRepository } from './repositories/alert-notification-config.repository';
 import { DatabaseModule } from '../../database/database.module';
 import { PopUpsModule } from '../pop-ups/pop-ups.module';
+import { AlertsRepository } from './repositories/alerts.repository';
 
 @Module({
   providers: [
@@ -27,10 +28,11 @@ import { PopUpsModule } from '../pop-ups/pop-ups.module';
     AlertsBodyCacheService,
     AlertNotificationGateway,
     HttpServiceImpl,
-    AlertNotificationConfigRepository
+    AlertNotificationConfigRepository,
+    AlertsRepository
   ],
   controllers: [AlertsBodyCacheController, LogsController, AlertNotificationController],
-  exports: [WsConnectionsService, WsAlertsConnectionsService],
+  exports: [WsConnectionsService, WsAlertsConnectionsService, AlertNotificationService],
   imports: [
     forwardRef(() => MessageModule),
     HttpModule,

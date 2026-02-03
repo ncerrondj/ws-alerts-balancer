@@ -14,11 +14,13 @@ import { IncidentRepository } from '../../../modules/incidents/repositories/inci
 import { DbUtils } from '../../../database/utils/db.utils';
 import { TIMES_MILLISECONDS } from '../../../utils/times.util';
 import { LocksPostponementManagerService } from './locks-postponement-manager.service';
+import { AlertNotificationService } from '../../../modules/alerts-request-management/services/alert-notifications.service';
 
 @Injectable()
 export class LockCaprinetService implements OnModuleInit {
   
   private readonly logger = new Logger(LockCaprinetService.name);
+  private readonly lockAlertTypeId = 24;
   constructor(
     private readonly bkLockCaprinetRepository: BkLocksCaprinetRepository,
     private readonly taskService: TaskService,
@@ -26,7 +28,8 @@ export class LockCaprinetService implements OnModuleInit {
     private readonly locksCaprinetRepository: LocksCaprinetRepository,
     private readonly wsAlertsConnectionsService: WsAlertsConnectionsService,
     private readonly incidentsRepository: IncidentRepository,
-    private readonly locksPostponementManagerService: LocksPostponementManagerService
+    private readonly locksPostponementManagerService: LocksPostponementManagerService,
+    private readonly alertNotificationService: AlertNotificationService
   ) {}
   async onModuleInit() {
     return;
@@ -188,7 +191,7 @@ export class LockCaprinetService implements OnModuleInit {
           this.killLockById(map.CODIGO_BLOQUEO)
         );
       }
-      await Promise.all(promises);
+      await Promise.allSettled(promises);
     }
     return { success: true };
   }
@@ -286,6 +289,9 @@ export class LockCaprinetService implements OnModuleInit {
       this.wsAlertsConnectionsService.getConnections(codigoUsuarioDestino).forEach(c => {
         c.emit(LOCK_ACTION.UNLOCK_TO_USER.concat(codigoUsuarioDestino), {lockTypeId: lock.CODIGO_TIPO_BLOQUEO});
       })
+    }
+    if(!actives.length) {
+      await this.alertNotificationService.finishAllAlertsByUserAndAlertType(lock.CODIGO_USUARIO_DESTINO, this.lockAlertTypeId);
     }
   }
 }

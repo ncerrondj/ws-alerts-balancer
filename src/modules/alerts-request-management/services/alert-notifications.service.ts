@@ -9,6 +9,7 @@ import { RegisterAlertResponseDto } from '../model/register-response.dto';
 import { PostNumerationRepository } from '../../../modules/locks-caprinet/repositories/postnumeration.repository';
 import { NotificationGeneralSoundDto } from '../model/notification-general-configuration.dto';
 import { AlertNotificationConfigRepository } from '../repositories/alert-notification-config.repository';
+import { AlertsRepository } from '../repositories/alerts.repository';
 
 @Injectable()
 export class AlertNotificationService {
@@ -17,7 +18,8 @@ export class AlertNotificationService {
     private readonly wsAlertsConnectionsService: WsAlertsConnectionsService,
     private readonly httpService: HttpServiceImpl,
     private readonly postNumerationRepository: PostNumerationRepository,
-    private readonly alertNotificationConfigRepository: AlertNotificationConfigRepository
+    private readonly alertNotificationConfigRepository: AlertNotificationConfigRepository,
+    private readonly alertsRepository: AlertsRepository
   ) {}
 
   async emitMessage(payload: EmitAlertMessagePayload, client?: Socket) {
@@ -95,5 +97,16 @@ export class AlertNotificationService {
     return {
       ok: true
     };
+  }
+  async finishAllAlertsByUserAndAlertType(userId: number, alertTypeId: number) {
+    const alerts = await this.alertsRepository.getAlertForFinishByOriginUserAndAlertType(userId, alertTypeId);
+    await Promise.allSettled(alerts.map(alert => {
+      return this.httpService.post({
+        path: 'notificacion-alerta/finalizacionAutomatica',
+        data:{
+          codigoAlerta: alert.CODIGO_ALERTA,
+        }
+      })
+    }));
   }
 }
