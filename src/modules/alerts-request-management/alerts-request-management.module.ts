@@ -17,6 +17,8 @@ import { AlertNotificationConfigRepository } from './repositories/alert-notifica
 import { DatabaseModule } from '../../database/database.module';
 import { PopUpsModule } from '../pop-ups/pop-ups.module';
 import { AlertsRepository } from './repositories/alerts.repository';
+import { TaskModule } from '../tasks/task.module';
+import { BkAlertsRepository } from './repositories/bk-alerts.repository';
 
 @Module({
   providers: [
@@ -29,7 +31,8 @@ import { AlertsRepository } from './repositories/alerts.repository';
     AlertNotificationGateway,
     HttpServiceImpl,
     AlertNotificationConfigRepository,
-    AlertsRepository
+    AlertsRepository,
+    BkAlertsRepository
   ],
   controllers: [AlertsBodyCacheController, LogsController, AlertNotificationController],
   exports: [WsConnectionsService, WsAlertsConnectionsService, AlertNotificationService],
@@ -38,7 +41,8 @@ import { AlertsRepository } from './repositories/alerts.repository';
     HttpModule,
     forwardRef(() => LocksCaprinetModule),
     PopUpsModule,
-    DatabaseModule
+    DatabaseModule,
+    TaskModule
   ],
 })
 export class AlertsRequestManagementModule {}

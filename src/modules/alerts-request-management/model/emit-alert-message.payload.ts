@@ -13,10 +13,12 @@ export class EmitAlertMessagePayload extends SuscribePayload {
   codigoUsuarioOrigen: number;
   titulo: string;
   urlRedireccion: string;
-  fechaAutodestruccion: string;
+  fechaAutoDestruccion: string;
   data: any;
   codigoAlerta: string;
   codigoPlantilla: string;
   objetivos: AlertTargets;
   mapeoFinalizacion: MapeoFinalizacion;
+  fechaHoraProgramacion?: string;
+  informacionAdicional: string;
 }
