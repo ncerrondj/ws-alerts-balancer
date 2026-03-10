@@ -13,12 +13,6 @@ export class PopUpsController {
         private readonly popUpService: PopUpsService
     ){}
 
-    // @Post('ace')
-    // async acePopUp(
-    //     @Body() dto: AcePopUpDto
-    // ) {
-    //     return await this.popUpService.acePopUp(dto);
-    // }
     @Post('ace')
     async acePopUp(
         @Body() dto: AcePopUpExtDto
@@ -42,6 +36,12 @@ export class PopUpsController {
 
     @Get('ace')
     async getAcePopUps(
+        @Query() query: IGetAllPopUpsParams
+    ) {
+        return await this.popUpService.getAcePopUps(query);
+    }
+    @Get('list')
+    async list(
         @Query() query: IGetAllPopUpsParams
     ) {
         return await this.popUpService.getAcePopUps(query);
