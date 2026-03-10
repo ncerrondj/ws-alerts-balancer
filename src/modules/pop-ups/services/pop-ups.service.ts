@@ -54,6 +54,13 @@ export class PopUpsService {
             data: popUps
         };
     }
+    async list(params: IGetAllPopUpsParams): Promise<IListResponse<IPopUp>> {
+        const popUps = await this.popUpRepository.getAll(params);
+        return {
+            total: popUps.length,
+            data: popUps
+        };
+    }
     async throwAcePopUpFromExternarl(params: AcePopUpExtDto) {
         const orderData = AceUtil.getOrderDataFromAceData(params.aceData);
         const targetUserIds = params.targetUserIds ?? (await this.popUpGetTargetsRepository.getAcePopUpTargets({

@@ -13,6 +13,7 @@ import { TaskModule } from './modules/tasks/task.module';
 import { IncidenctsModule } from './modules/incidents/incidents.module';
 import { PendingRegularizationModule } from './modules/pending-regularization/pending-regularization.module';
 import { PopUpsModule } from './modules/pop-ups/pop-ups.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { PopUpsModule } from './modules/pop-ups/pop-ups.module';
     TaskModule,
     IncidenctsModule,
     PendingRegularizationModule,
-    PopUpsModule
+    PopUpsModule,
+    LoggerModule
   ],
   controllers: [AppController],
   providers: [AppService],
