@@ -72,20 +72,6 @@ export class MessageService {
       });
     }, 1500);
   }
-  async handleSimpleMessageClosedByUserV2(
-    client: Socket,
-    data: CloseMessageDto
-  ) {
-    const {
-      userId,
-    } = data;
-    this.wsConnectionsService.addConnectionIfNecessary(data, client);
-    await this.popUpRepository.markAsRead(data.popUpId, +userId);
-    const userConnections = this.wsConnectionsService.getConnections(userId);
-    userConnections.forEach((c) => {
-      c.emit(MESSAGE_EVENTS.CLOSE_SIMPLE_CUSTOM_MESSAGE_BY_USER_V2 + userId, data);
-    });
-  }
   sendSimpleMessage(messageDto: MessageDto, perfilId?: number) {
     const {message, title, userIdsToExcludeOfNotification = [], targetUserIds, height, width} = messageDto;
     
