@@ -43,7 +43,6 @@ export class LockCaprinetService implements OnModuleInit {
   //   }
   // }
   async onModuleInit() {
-    return;
     const bks = await this.bkLockCaprinetRepository.getAll({
       created: false,
       aborted: false,
