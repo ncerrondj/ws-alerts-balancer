@@ -9,6 +9,7 @@ import { CyclicalPopUpAllowHandlerService } from "./cyclical-pop-up-allow-handle
 import { CyclicalPopUpOnFinishHandlerService } from "./cyclical-pop-up-on-finish-handler.service";
 import { PopUpMappingRepository } from "../repositories/pop-up-mapping.repository";
 import { ObjectUtils } from "../../../utils/objets.util";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class CyclicalPopUpService implements OnModuleInit {
@@ -23,13 +24,12 @@ export class CyclicalPopUpService implements OnModuleInit {
         private readonly popUpRepository: PopUpRepository,
         private readonly cyclicalPopUpAllowHandlerService: CyclicalPopUpAllowHandlerService,
         private readonly cyclicalPopUpOnFinishHandlerService: CyclicalPopUpOnFinishHandlerService,
-        private readonly popUpMappingRepository: PopUpMappingRepository
+        private readonly popUpMappingRepository: PopUpMappingRepository,
+        private readonly configService: ConfigService, 
     ) {}
     async onModuleInit() {
-        setInterval(() => {
-            const used = process.memoryUsage();
-            console.log('RAM MB:', used.heapUsed / 1024 / 1024);
-        }, 5000);
+        const omitir = this.configService.get<string>('OMITIR_PROGRAMACION_ALERTAS') === '1';
+        if (omitir) return;
         const pendingToRestore = await this.cyclicalPopUpRepository.getAllPending();
         pendingToRestore.forEach(pending => {
             const {
