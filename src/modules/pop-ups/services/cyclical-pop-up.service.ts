@@ -8,6 +8,7 @@ import { PopUpRepository } from "../repositories/pop-up.repository";
 import { CyclicalPopUpAllowHandlerService } from "./cyclical-pop-up-allow-handler.service";
 import { CyclicalPopUpOnFinishHandlerService } from "./cyclical-pop-up-on-finish-handler.service";
 import { PopUpMappingRepository } from "../repositories/pop-up-mapping.repository";
+import { ObjectUtils } from "../../../utils/objets.util";
 
 @Injectable()
 export class CyclicalPopUpService implements OnModuleInit {
@@ -48,7 +49,7 @@ export class CyclicalPopUpService implements OnModuleInit {
                     cycleId: pending.CODIGO,
                     popUpId: pending.CODIGO_NOTIFICACION,
                     cyclicalPopUpDto: {
-                        jsonData: JSON.parse(pending.DATA_JSON),
+                        jsonData: ObjectUtils.safeParseJSON(pending.DATA_JSON, {}),
                         message: pending.MENSAJE_NOTIFICACION,
                         title: pending.TITULO_NOTIFICACION,
                         secondsInterval: pending.INTERVALO_SEGUNDOS,
