@@ -26,6 +26,10 @@ export class CyclicalPopUpService implements OnModuleInit {
         private readonly popUpMappingRepository: PopUpMappingRepository
     ) {}
     async onModuleInit() {
+        setInterval(() => {
+            const used = process.memoryUsage();
+            console.log('RAM MB:', used.heapUsed / 1024 / 1024);
+        }, 5000);
         const pendingToRestore = await this.cyclicalPopUpRepository.getAllPending();
         pendingToRestore.forEach(pending => {
             const {
