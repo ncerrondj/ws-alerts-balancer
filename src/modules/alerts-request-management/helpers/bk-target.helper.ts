@@ -2,6 +2,7 @@ import { DbUtils } from "../../../database/utils/db.utils";
 import { IBkAlert, IBkTarget } from "../interfaces/bk-alert";
 import { EmitAlertMessagePayload } from "../model/emit-alert-message.payload";
 import { BkTargetAlertType } from "../../../database/sp/interfaces/bk-alert-params.sp";
+import { ObjectUtils } from "../../../utils/objets.util";
 
 export class BkTargetHelper {
     static mapTargetsOnAlertsBk(dataBkAlerts: IBkAlert[], bkTargets: IBkTarget[]) {
@@ -30,7 +31,7 @@ export class BkTargetHelper {
             codigoPlantilla: data.CODIGO_PLANTILLA.toString(),
             codigoTipoAlerta: data.CODIGO_TIPO_ALERTA,
             codigoUsuarioOrigen: data.CODIGO_USUARIO,
-            data: JSON.parse(data.CUERPO_ALERTA),
+            data: ObjectUtils.safeParseJSON(data.CUERPO_ALERTA, {}),
             fechaHoraProgramacion: DbUtils.toJsonDate(data.FECHA_HORA_CREACION_ALERTA_PROGRAMADA),
             fechaAutoDestruccion: DbUtils.toJsonDate(data.FECHA_AUTO_DESTRUCCION),
             informacionAdicional: data.INFORMACION_ADICIONAL,

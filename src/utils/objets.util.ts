@@ -34,4 +34,32 @@ export class ObjectUtils {
 
         return true;
     }
+
+    static safeParseJSON<T = any>(
+        valor: unknown,
+        fallback: T = null
+    ): T {
+        try {
+            // null, undefined o vacío
+            if (valor === null || valor === undefined || valor === '') {
+                return fallback;
+            }
+
+            // Si ya es objeto, lo retornamos tipado
+            if (typeof valor === 'object') {
+                return valor as T;
+            }
+
+            // Si es string, intentamos parsear
+            if (typeof valor === 'string') {
+                return JSON.parse(valor) as T;
+            }
+
+            return fallback;
+
+        } catch (error) {
+            console.error('Error parseando JSON:', error, valor);
+            return fallback;
+        }
+    }
 }
